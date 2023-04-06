@@ -1,0 +1,44 @@
+version: '3.9'
+services:
+  db:
+    container_name: postgres
+    image: postgres:14.6
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: hintonmovie
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: b5ed0798864b19294c54551185343480
+      POSTGRES_PORT: 5432
+      DATABASE_HOST: dokku-postgres-hintonmovie
+    restart: always
+
+  
+  # web:
+    # image: main
+    # container_name: main
+    # environment:
+    #   - DATABASE_URL=postgres://db/phongthuy_thanhnhan
+    #   - SITE_URL=http://localhost:8000
+    #   # - REDIS_URL=redis://redis:6379/1
+    #   # - ELASTICSEARCH_URL=http://elasticsearch:9200
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    # command: "python /code/manage.py runserver 0.0.0.0:8000"
+    # volumes:
+    #   - .:/code
+    #   # - .:/code/static
+    # working_dir: /code
+    # environment:
+    #   DEBUG: 'true'
+    # ports:
+    #   - "8000:8000"
+    # restart: always
+    # depends_on:
+    #   - db
+
+volumes:
+  pgdata:
