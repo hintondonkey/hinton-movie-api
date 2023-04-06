@@ -28,7 +28,7 @@ RUN python manage.py collectstatic --noinput --clear
 RUN chmod -R 777 /code/static/
 # RUN chmod -R 777 /code/staticfiles/
 RUN chown -R dokku:dokku /code/
-RUN chown -R dokku:dokku /code/media/
+# RUN chown -R dokku:dokku /code/media/
 USER dokku
 
 # COPY ./entrypoint.sh /
