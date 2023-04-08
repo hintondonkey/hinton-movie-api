@@ -26,7 +26,7 @@ class GetStreamPlatformDetailAV(APIView):
 
 class StreamPlatformAV(APIView):
     # permission_classes = [IsAdminorReadonly]
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
     # throttle classes = [AnonRateThrottlel
     def get(self, request):
         platform = StreamPlatform.objects.al1()
