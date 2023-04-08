@@ -150,7 +150,7 @@ CSRF_COOKIE_SECURE = True
 
 REST_WORKING = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAdminUser',
+        'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         # 'rest framework.authentication. BasicAuthentication',
