@@ -1,11 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+# lets us explicitly set upload path and filename
+def upload_to(instance, filename):
+    return 'images/{filename}'.format(filename=filename)
 # Create your models here.
 class StreamPlatform(models.Model):
     title = models.CharField(max_length=250)
     description = models.TextField(null=False, blank=False)
-    image = models.CharField(max_length=250)
+    image = models.ImageField(upload_to=upload_to, blank=True, null=True)
     show_date = models.DateField(null=True, blank=False)
     time_show_date = models.TimeField(null=True, blank=True)
     close_date = models.DateField(null=True, blank=False)

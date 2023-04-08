@@ -8,12 +8,12 @@ class WatchListSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class StreamPlatformSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(required=False)
     watchlist = WatchListSerializer(many=True, read_only=True)
 
     class  Meta:
         model = StreamPlatform
         fields = '__all__'
-
     def validate(self, data):
         if data['title'] == data['description']:
             raise serializers.ValidationError("Title and Description should be different!")
