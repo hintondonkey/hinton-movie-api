@@ -26,7 +26,7 @@ class GetStreamPlatformDetailAV(APIView):
 
 class StreamPlatformAV(APIView):
     # permission_classes = [IsAdminorReadonly]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
     # throttle classes = [AnonRateThrottlel
     def get(self, request):
         platform = StreamPlatform.objects.al1()
@@ -61,7 +61,7 @@ class StreamPlatformAV(APIView):
             return Response(serializer.errors)
         
 class StreamPlatformDetailAV(APIView):
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
     # throttle_classes = [AnonRateThrottle]
     def get(self, request, pk):
         try:
@@ -94,7 +94,7 @@ class StreamPlatformDetailAV(APIView):
 
 class WatchListAV(APIView):
     # permission classes = [IsAdminorReadonly]
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
     # throttle_classes = [AnonRateThrottle]
     def get(self, request):
         watchList = WatchList.objects.all()
@@ -111,7 +111,7 @@ class WatchListAV(APIView):
             return Response(serializer.errors)
         
 class WatchListDetailAV(APIView):
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
     # throttle_classes = [AnonRateThrottle]
     def get(self, request, pk):
         try:
