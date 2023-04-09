@@ -83,9 +83,13 @@ class StreamPlatformDetailAV(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        platform = StreamPlatform.objects.get (pk=pk)
+        platform = StreamPlatform.objects.get(pk=pk)
+        platformtitle = StreamPlatform.objects.get(pk=pk).title
         platform.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {"Success": "Delete " + platformtitle + " successfully!"},
+            status=status.HTTP_204_NO_CONTENT
+        )
 
 
 class WatchListAV(APIView):
@@ -129,9 +133,12 @@ class WatchListDetailAV(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        watchList = WatchList.objects.get (pk=pk)
+        watchList = WatchList.objects.get(pk=pk)
         watchList.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {"Success": "Delete watch list successfully!"},
+            status=status.HTTP_204_NO_CONTENT
+        )
 
 @api_view(['GET', 'POST'])
 def StreamPlatform_list(request):

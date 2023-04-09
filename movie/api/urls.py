@@ -4,7 +4,9 @@ from movie.api.views import WatchListAV, WatchListDetailAV, StreamPlatformAV, Up
 
 urlpatterns = [
     path('liststream/', GetAllStreamPlatformAV.as_view(), name='list-streamplatform'),  
-    path('<int:pk>', GetStreamPlatformDetailAV.as_view(), name='streamplatform-detail'),  
+    path('<int:pk>', GetStreamPlatformDetailAV.as_view(), name='streamplatform-detail'),
+
+    
     path('noti/<int:pk>', UpdateNotificationAV.as_view(), name='update-notification'),
     path('get-noti/<int:pk>', GetNotification.as_view(), name='get-notification'),
     path('stream/', StreamPlatformAV.as_view(), name='Streamplatform-list'), 
