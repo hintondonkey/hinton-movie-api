@@ -5,6 +5,7 @@ from rest_framework import status
 from movie.api.serializers import WatchListSerializer, StreamPlatformSerializer
 from movie.models import WatchList, StreamPlatform
 from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS, IsAuthenticatedOrReadOnly, IsAdminUser
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 class GetAllStreamPlatformAV(APIView):
     def get(self, request):
@@ -94,6 +95,7 @@ class StreamPlatformDetailAV(APIView):
 
 class WatchListAV(APIView):
     # permission classes = [IsAdminorReadonly]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAdminUser]
     # throttle_classes = [AnonRateThrottle]
     def get(self, request):
@@ -111,6 +113,7 @@ class WatchListAV(APIView):
             return Response(serializer.errors)
         
 class WatchListDetailAV(APIView):
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAdminUser]
     # throttle_classes = [AnonRateThrottle]
     def get(self, request, pk):
