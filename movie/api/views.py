@@ -26,24 +26,6 @@ class GetStreamPlatformDetailAV(APIView):
         return Response(serializer.data)
 
 class StreamPlatformAV(APIView):
-    # permission_classes = [IsAdminorReadonly]
-    permission_classes = [IsAdminUser]
-    # throttle classes = [AnonRateThrottlel
-    def get(self, request):
-        platform = StreamPlatform.objects.al1()
-        serializer = StreamPlatformSerializer(
-        platform, many=True, context={'request': request})
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = StreamPlatformSerializer (data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors)
-
-class StreamPlatformAV(APIView):
     # permission classes = [IsAdminorReadonly]
     permission_classes = [IsAdminUser]
     # throttle_classes = [AnonRateThrottle]
@@ -95,7 +77,7 @@ class StreamPlatformDetailAV(APIView):
 
 class WatchListAV(APIView):
     # permission classes = [IsAdminorReadonly]
-    authentication_classes = [SessionAuthentication]
+    # authentication_classes = [SessionAuthentication]
     permission_classes = [IsAdminUser]
     # throttle_classes = [AnonRateThrottle]
     def get(self, request):
@@ -143,20 +125,20 @@ class WatchListDetailAV(APIView):
             status=status.HTTP_204_NO_CONTENT
         )
 
-@api_view(['GET', 'POST'])
-def StreamPlatform_list(request):
-    if request.method == 'GET':
-        movies = StreamPlatform.objects.all()
-        serializer = StreamPlatformSerializer(movies, many=True)
-        return Response(serializer.data)
+# @api_view(['GET', 'POST'])
+# def StreamPlatform_list(request):
+#     if request.method == 'GET':
+#         movies = StreamPlatform.objects.all()
+#         serializer = StreamPlatformSerializer(movies, many=True)
+#         return Response(serializer.data)
     
-    if request.method == 'POST':
-        serializer = StreamPlatformSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response (serializer.errors)
+#     if request.method == 'POST':
+#         serializer = StreamPlatformSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         else:
+#             return Response (serializer.errors)
     
 # @api_view(['GET', 'PUT', 'DELETE']) 
 # def StreamPlatform_details(request, pk):

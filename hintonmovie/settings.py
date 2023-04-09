@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'movie.apps.MovieConfig',
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_framework.throttling'
+    # 'rest_framework.throttling'
 ]
 
 MIDDLEWARE = [
@@ -154,7 +154,7 @@ REST_WORKING = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         # 'rest framework.authentication. BasicAuthentication',
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
         # 'rest_framework_simplejwt.authentication.JwTAuthentication',
     ],
     # 'DEFAULT_THROTTLE_RATES': {
