@@ -65,12 +65,11 @@ class StreamPlatformDetailAV(APIView):
     def delete(self, request, pk):
         platform = StreamPlatform.objects.get(pk=pk)
         platformtitle = StreamPlatform.objects.get(pk=pk).title
+
         platform.delete()
         return Response(
-            {"Success": "Delete " + platformtitle + " successfully!"},
-            status=status.HTTP_204_NO_CONTENT
+            {"Success": "Delete " + platformtitle + " successfully!"}
         )
-
 
 class WatchListAV(APIView):
     permission_classes = [IsAdminUser]
@@ -113,8 +112,7 @@ class WatchListDetailAV(APIView):
         watchList = WatchList.objects.get(pk=pk)
         watchList.delete()
         return Response(
-            {"Success": "Delete watch list successfully!"},
-            status=status.HTTP_204_NO_CONTENT
+            {"Success": "Delete watch list successfully!"}
         )
 
 class UpdateNotificationAV(APIView):
