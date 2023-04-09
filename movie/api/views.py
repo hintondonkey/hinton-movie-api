@@ -113,8 +113,8 @@ class WatchListAV(APIView):
             return Response(serializer.errors)
         
 class WatchListDetailAV(APIView):
-    authentication_classes = [SessionAuthentication]
-    permission_classes = [IsAdminUser]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     # throttle_classes = [AnonRateThrottle]
     def get(self, request, pk):
         try:
