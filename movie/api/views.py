@@ -26,9 +26,7 @@ class GetStreamPlatformDetailAV(APIView):
         return Response(serializer.data)
 
 class StreamPlatformAV(APIView):
-    # permission classes = [IsAdminorReadonly]
     permission_classes = [IsAdminUser]
-    # throttle_classes = [AnonRateThrottle]
     def get(self, request):
         platform = StreamPlatform.objects.all()
         serializer = StreamPlatformSerializer(
@@ -45,7 +43,6 @@ class StreamPlatformAV(APIView):
         
 class StreamPlatformDetailAV(APIView):
     permission_classes = [IsAdminUser]
-    # throttle_classes = [AnonRateThrottle]
     def get(self, request, pk):
         try:
             platform = StreamPlatform.objects.get(pk=pk)
@@ -76,10 +73,7 @@ class StreamPlatformDetailAV(APIView):
 
 
 class WatchListAV(APIView):
-    # permission classes = [IsAdminorReadonly]
-    # authentication_classes = [SessionAuthentication]
     permission_classes = [IsAdminUser]
-    # throttle_classes = [AnonRateThrottle]
     def get(self, request):
         watchList = WatchList.objects.all()
         serializer = WatchListSerializer(
@@ -95,9 +89,7 @@ class WatchListAV(APIView):
             return Response(serializer.errors)
         
 class WatchListDetailAV(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [IsAuthenticated]
-    # throttle_classes = [AnonRateThrottle]
+    permission_classes = [IsAdminUser]
     def get(self, request, pk):
         try:
             watchList = WatchList.objects.get(pk=pk)
@@ -124,45 +116,6 @@ class WatchListDetailAV(APIView):
             {"Success": "Delete watch list successfully!"},
             status=status.HTTP_204_NO_CONTENT
         )
-
-# @api_view(['GET', 'POST'])
-# def StreamPlatform_list(request):
-#     if request.method == 'GET':
-#         movies = StreamPlatform.objects.all()
-#         serializer = StreamPlatformSerializer(movies, many=True)
-#         return Response(serializer.data)
-    
-#     if request.method == 'POST':
-#         serializer = StreamPlatformSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         else:
-#             return Response (serializer.errors)
-    
-# @api_view(['GET', 'PUT', 'DELETE']) 
-# def StreamPlatform_details(request, pk):
-#     if request.method == 'GET':
-#         try:
-#             movie = StreamPlatform.objects.get(pk=pk)
-#         except StreamPlatform.DoesNotExist:
-#             return Response({'error': 'Movie not fund'}, status=status.HTTP_404_NOT_FOUND)
-#         serializer = StreamPlatformSerializer(movie)
-#         return Response(serializer.data)
-    
-#     if request.method == 'PUT':
-#         movie = StreamPlatform.objects.get(pk=pk)
-#         serializer = StreamPlatformSerializer(movie, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         else:
-#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-#     if request.method == 'DELETE':
-#         movie = StreamPlatform.objects.get(pk=pk)
-#         movie.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class UpdateNotificationAV(APIView):
     def put(self, request, pk):

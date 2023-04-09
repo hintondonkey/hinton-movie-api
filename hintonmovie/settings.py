@@ -43,10 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "whitenoise.runserver_nostatic",
 
-    'movie.apps.MovieConfig',
+    'movie',
     'rest_framework',
-    'rest_framework.authtoken',
-    # 'rest_framework.throttling'
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
@@ -147,16 +146,13 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
-REST_WORKING = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
+REST_FRAMEWORK = {
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     'rest_framework.permissions.IsAdminUser',
+    # ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'rest framework.authentication. BasicAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
-        # 'rest_framework.authentication.SessionAuthentication',
-        # 'rest_framework_simplejwt.authentication.JwTAuthentication',
-    ],
+        'rest_framework.authentication.TokenAuthentication'
+    ]
     # 'DEFAULT_THROTTLE_RATES': {
     #     'anon': '5/day',
     #     'user': '10/day',
