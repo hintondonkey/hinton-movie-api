@@ -87,6 +87,14 @@ class WatchListAV(APIView):
         else:
             return Response(serializer.errors)
         
+class GetWatchListByPlatformIdAV(APIView):
+    permission_classes = [IsAdminUser]
+    def get(self, request, pk):
+        watchList = WatchList.objects.filter(platform=pk)
+        serializer = WatchListSerializer(
+            watchList, many=True, context={'request': request})
+        return Response(serializer.data)
+
 class WatchListDetailAV(APIView):
     permission_classes = [IsAdminUser]
     def get(self, request, pk):
