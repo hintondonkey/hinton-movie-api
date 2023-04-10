@@ -45,7 +45,8 @@ INSTALLED_APPS = [
 
     'movie',
     'rest_framework',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -164,5 +165,10 @@ REST_FRAMEWORK = {
     #     'review-detail': '100/day',
     # },
 }
+
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0:5500/",
+    "http://localhost:21690/"
+]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
