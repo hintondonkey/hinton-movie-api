@@ -170,7 +170,8 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0:5500/",
     "http://localhost:21690/",
-    "https://stephenkiendinh.com/"
+    "https://stephenkiendinh.com/",
+    "http://localhost:53601/"
 ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
