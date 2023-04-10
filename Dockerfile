@@ -26,7 +26,8 @@ COPY . /code/
 # Collect static files
 RUN python manage.py collectstatic --noinput --clear
 RUN chmod -R 777 /code/static/
-# RUN chmod -R 777 /code/media/
+RUN mkdir /code/media
+RUN chmod -R 777 /code/media/
 # RUN chmod -R 777 /code/staticfiles/
 RUN chown -R dokku:dokku /code/
 RUN chown -R dokku:dokku /code/media/
