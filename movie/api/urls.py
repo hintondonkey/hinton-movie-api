@@ -7,7 +7,7 @@ urlpatterns = [
     path('<int:pk>', GetStreamPlatformDetailAV.as_view(), name='streamplatform-detail'),
 
     path('noti/<int:pk>', UpdateNotificationAV.as_view(), name='update-notification'),
-    path('get-noti/<int:pk>', GetNotification.as_view(), name='get-notification'),
+    path('get-noti/', GetNotification.as_view(), name='get-notification'),
     path('stream/', StreamPlatformAV.as_view(), name='Streamplatform-list'), 
     path('stream/<int:pk>', StreamPlatformDetailAV.as_view(), name='Streamplatform-details'),
     path('watch-list/', WatchListAV.as_view(), name='Streamplatform-list'),

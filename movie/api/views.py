@@ -126,29 +126,34 @@ class WatchListDetailAV(APIView):
 class UpdateNotificationAV(APIView):
     def put(self, request, pk):
         platform = StreamPlatform.objects.get(pk=pk)
-        serializer = StreamPlatformSerializer(platform, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            noti = StreamPlatform.objects.get(pk=pk)
-            if noti.notification:
-                print("check noti: ", noti.notification)
-                # GetNotification.get(self,context=request,pk=noti.id)
+        print("data: ", platform)
+        noti = request.data['notification']
+        if noti:
+            print("noti: ", noti)
+            serializer = StreamPlatformSerializer(platform, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                noti = StreamPlatform.objects.get(pk=pk)
+                if noti.notification:
+                    print("check noti: ", noti.notification)
+                    # GetNotification.get(self,context=request,pk=noti.id)
 
+                else:
+                    print("noti is not added")
+                return Response(serializer.data)
             else:
-                print("noti is not added")
-            return Response(serializer.data)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+            pass
+            
 class GetNotification(APIView):
-    def get(self, request, pk):
+    def get(self, request):
         try:
-            notification = StreamPlatform.objects.get(pk=pk).notification
-            print("check noti get: ", notification)
+            noti = StreamPlatform.objects.filter(active_noti=True, active=True)
         except StreamPlatform.DoesNotExist:
             return Response({'error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
                              
         serializer = StreamPlatformSerializer(
-            notification, context={'request': request})
+            noti, many=True, context={'request': request})
         print("check notioiiii: ", Response(serializer.data))
         return Response(serializer.data)

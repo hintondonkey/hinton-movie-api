@@ -16,6 +16,7 @@ class StreamPlatform(models.Model):
     active = models.BooleanField(default=True)
     create_date = models.DateField(auto_now_add=True)
     notification = models.CharField(max_length=250, null=True, blank=True)
+    active_noti = models.BooleanField(default=False)
 
     def str (self):
         return self.title
