@@ -168,11 +168,12 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0:5500/",
+    "http://127.0.0.1:5500/",
     "http://localhost:21690/",
     "https://stephenkiendinh.com/",
     "http://localhost:53501/",
-    "https://hintomovie.netlify.app/"
+    "https://hintomovie.netlify.app/",
+
 ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
