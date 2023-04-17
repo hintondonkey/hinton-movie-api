@@ -35,8 +35,21 @@ class StreamPlatformAV(APIView):
 
     def post(self, request):
         serializer = StreamPlatformSerializer(data=request.data)
+        watchlist = request.data.get('watchlist')
         if serializer.is_valid():
             serializer.save()
+            movieId = serializer.data.get('id')
+            if(movieId and watchlist):
+                for i,watch in enumerate(watchlist):
+                    watch['platform'] = movieId
+                    watchListSerializer = WatchListSerializer(data=watch)
+                    if watchListSerializer.is_valid():
+                        watchListSerializer.save()
+                        serializer.data['watchlist'].append(watchListSerializer.data)
+
+                    else:
+                        return Response(watchListSerializer.errors)
+                print('serial', serializer.data['watchlist'])
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
@@ -48,7 +61,7 @@ class StreamPlatformDetailAV(APIView):
             platform = StreamPlatform.objects.get(pk=pk)
         except StreamPlatform.DoesNotExist:
             return Response({'error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
-                             
+                            
         serializer = StreamPlatformSerializer(
             platform, context={'request': request})
         return Response(serializer.data)
@@ -83,6 +96,7 @@ class WatchListAV(APIView):
         serializer = WatchListSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            print('response watch list', serializer.data)
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
