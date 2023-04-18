@@ -15,7 +15,7 @@ class StreamPlatformSerializer(serializers.ModelSerializer):
         model = StreamPlatform
         fields = '__all__'
     def validate(self, data):
-        if data['title'] == data['description']:
+        if "title" in data and "description" in data and data['title'] == data['description']:
             raise serializers.ValidationError("Title and Description should be different!")
         else:
             return data
