@@ -40,7 +40,7 @@ class StreamPlatformAV(APIView):
             serializer.save()
             movieId = serializer.data.get('id')
             if(movieId and watchlist):
-                for i,watch in enumerate(watchlist):
+                for watch in watchlist:
                     watch['platform'] = movieId
                     watchListSerializer = WatchListSerializer(data=watch)
                     if watchListSerializer.is_valid():
