@@ -124,7 +124,7 @@ class WatchListDetailAV(APIView):
     def put(self, request, pk):
         watchList = WatchList.objects.get(pk=pk)
         serializer = WatchListSerializer(watchList, data=request.data)
-        if watchList.is_valid():
+        if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         else:
