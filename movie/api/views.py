@@ -34,8 +34,23 @@ class StreamPlatformAV(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        watchlist = []
+        for i in range(100):
+            print('i watchlist', i)
+            if request.data.get('watchlist['+ str(i) +'][website]'):
+                watchlist_request = {
+                    "date_picker": request.data.get('watchlist['+ str(i) +'][date_picker]'),
+                    "time_show_date": request.data.get('watchlist['+ str(i) +'][time_show_date]'),
+                    "price": request.data.get('watchlist['+ str(i) +'][price]'),
+                    "website": request.data.get('watchlist['+ str(i) +'][website]'),
+                    "active": True
+                }
+                watchlist.append(watchlist_request)
+            else:
+                break
+        request.data['active'] = True
         serializer = StreamPlatformSerializer(data=request.data)
-        watchlist = request.data.get('watchlist')
+
         if serializer.is_valid():
             serializer.save()
             movieId = serializer.data.get('id')
@@ -49,7 +64,6 @@ class StreamPlatformAV(APIView):
 
                     else:
                         return Response(watchListSerializer.errors)
-                print('serial', serializer.data['watchlist'])
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
