@@ -174,7 +174,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "https://hintonmovieadmin.netlify.app",
     "https://hintondonkey.com",
-    "http://bookingdoctor.online:3000/"
+    "http://bookingdoctor.online:3000"
 ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
