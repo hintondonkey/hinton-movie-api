@@ -67,7 +67,31 @@ class StreamPlatformAV(APIView):
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
-        
+
+
+class StreamPlatPostformAV(APIView):
+
+    def post(self, request):
+        serializer = StreamPlatformSerializer(data=request.data)
+        watchlist = request.data.get('watchlist')
+        if serializer.is_valid():
+            serializer.save()
+            movieId = serializer.data.get('id')
+            if(movieId and watchlist):
+                for watch in watchlist:
+                    watch['platform'] = movieId
+                    watchListSerializer = WatchListSerializer(data=watch)
+                    if watchListSerializer.is_valid():
+                        watchListSerializer.save()
+                        serializer.data['watchlist'].append(watchListSerializer.data)
+                    else:
+                        return Response(watchListSerializer.errors)
+                print('serial', serializer.data['watchlist'])
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors)
+
+
 class StreamPlatformDetailAV(APIView):
     permission_classes = [IsAdminUser]
     def get(self, request, pk):
