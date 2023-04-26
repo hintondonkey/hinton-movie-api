@@ -15,8 +15,8 @@ class StreamPlatform(models.Model):
     time_close_date = models.TimeField(null=True, blank=True)
     active = models.BooleanField(default=True)
     create_date = models.DateField(auto_now_add=True)
-    notification = models.CharField(max_length=250, null=True, blank=True)
-    active_noti = models.BooleanField(default=False)
+    titleNoti = models.CharField(max_length=250, null=True, blank=True)
+    summaryNoti = models.TextField(null=True, blank=True)
     def str (self):
         return self.title
 
