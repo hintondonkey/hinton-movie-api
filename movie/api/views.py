@@ -96,10 +96,15 @@ class StreamPlatPostformAV(APIView):
                     data = json.load(file)
                 creds = credentials.Certificate(data)
                 
-                app = firebase_admin.initialize_app(creds)
+                firebase_admin.initialize_app(creds)
+                movieId = {
+                    "id": str(serializer.data['id'])
+                }
                 message = messaging.Message(
-                    notification= messaging.Notification(title=serializer.data['titleNoti'], body=serializer.data['summaryNoti']),
+                    notification= messaging.Notification(title=serializer.data['titleNoti'], 
+                                                         body=serializer.data['summaryNoti']),
                     topic="demo",
+                    data=movieId
                 )
                 res = messaging.send(message)
                 print('Successfully sent message:  ', res)
@@ -131,10 +136,14 @@ class StreamPlatformDetailAV(APIView):
                     data = json.load(file)
                 creds = credentials.Certificate(data)
                 
-                app = firebase_admin.initialize_app(creds)
+                firebase_admin.initialize_app(creds)
+                movieId = {
+                    "id": str(serializer.data['id'])
+                }
                 message = messaging.Message(
                     notification= messaging.Notification(title=serializer.data['titleNoti'], body=serializer.data['summaryNoti']),
                     topic="demo",
+                    data=movieId
                 )
                 res = messaging.send(message)
                 print('Successfully sent message:  ', res)
