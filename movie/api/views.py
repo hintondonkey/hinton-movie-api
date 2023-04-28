@@ -78,6 +78,8 @@ class StreamPlatPostformAV(APIView):
     def post(self, request):
         serializer = StreamPlatformSerializer(data=request.data)
         watchlist = request.data.get('watchlist')
+        if not serializer.is_valid():
+            print(serializer.errors)
         if serializer.is_valid():
             serializer.save()
             movieId = serializer.data.get('id')
