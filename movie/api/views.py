@@ -10,6 +10,9 @@ import firebase_admin
 from firebase_admin import credentials, messaging
 import os
 import json
+creds = credentials.Certificate("movie/api/cert.json")
+firebase_admin.initialize_app(creds)
+
 
 class GetAllStreamPlatformAV(APIView):
     def get(self, request):
@@ -92,13 +95,15 @@ class StreamPlatPostformAV(APIView):
                         serializer.data['watchlist'].append(watchListSerializer.data)
                     else:
                         return Response(watchListSerializer.errors)
+            print("============================================================================")
             print('serial', serializer.data)
+            print("============================================================================")
             if(serializer.data['titleNoti'] and serializer.data['summaryNoti']):
-                with open('movie/api/cert.json') as file:
-                    data = json.load(file)
-                creds = credentials.Certificate(data)
+                # with open('movie/api/cert.json') as file:
+                #     data = json.load(file)
+                # creds = credentials.Certificate(data)
                 
-                firebase_admin.initialize_app(creds)
+                # firebase_admin.initialize_app(creds)
                 movieId = {
                     "id": str(serializer.data['id'])
                 }
@@ -109,7 +114,9 @@ class StreamPlatPostformAV(APIView):
                     data=movieId
                 )
                 res = messaging.send(message)
+                print("============================================================================")
                 print('Successfully sent message:  ', res)
+                print("============================================================================")
             return Response(serializer.data,status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors)
@@ -129,16 +136,17 @@ class StreamPlatformDetailAV(APIView):
 
     def put(self, request, pk):
         ischecked = request.data['ischecked']
+        print(ischecked)
         platform = StreamPlatform.objects.get(pk=pk)
         serializer = StreamPlatformSerializer(platform, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            if (ischecked == 'true'):
-                with open('movie/api/cert.json') as file:
-                    data = json.load(file)
-                creds = credentials.Certificate(data)
+            if (ischecked==True):
+                # with open('movie/api/cert.json') as file:
+                #     data = json.load(file)
+                # creds = credentials.Certificate(data)
                 
-                firebase_admin.initialize_app(creds)
+                # firebase_admin.initialize_app(creds)
                 movieId = {
                     "id": str(serializer.data['id'])
                 }
@@ -148,7 +156,9 @@ class StreamPlatformDetailAV(APIView):
                     data=movieId
                 )
                 res = messaging.send(message)
+                print("============================================================================")
                 print('Successfully sent message:  ', res)
+                print("============================================================================")
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
