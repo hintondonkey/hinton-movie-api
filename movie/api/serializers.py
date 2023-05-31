@@ -8,7 +8,7 @@ class WatchListSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class StreamPlatformSerializer(serializers.ModelSerializer):
-    image = serializers.ImageField(required=False)
+    # image = serializers.ImageField(required=False)
     watchlist = WatchListSerializer(many=True, read_only=True)
 
     class  Meta:

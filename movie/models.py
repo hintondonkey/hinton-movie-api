@@ -8,7 +8,7 @@ def upload_to(instance, filename):
 class StreamPlatform(models.Model):
     title = models.CharField(max_length=250)
     description = models.TextField(null=False, blank=False)
-    image = models.ImageField(upload_to=upload_to, blank=True, null=True)
+    image = models.CharField(max_length=250)
     show_date = models.DateField(null=True, blank=False)
     time_show_date = models.TimeField(null=True, blank=True)
     close_date = models.DateField(null=True, blank=False)
