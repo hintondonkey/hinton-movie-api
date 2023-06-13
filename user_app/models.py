@@ -22,7 +22,8 @@ class Broker(BaseCreateModel):
 
 
 class AccountType(BaseCreateModel):
-    name = models.TextField(default='', blank=True)
+    name = models.CharField(max_length=100)
+    description = models.TextField(default='', null=True, blank=True)
 
 
 class Profile(BaseCreateModel):
