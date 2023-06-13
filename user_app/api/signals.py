@@ -13,12 +13,15 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        account_type = AccountType.objects.filter(name=instance.account_type).first()
-        current_user = User.objects.filter(id=instance.current_user_id).first()
+        account_type = None
         broker = None
-        if account_type == AccountTypeEnum.BUSINESS_ADMIN.value:
-            broker = Broker.objects.create(name=instance.username)
-        
+        if not instance.is_superuser:
+            account_type = AccountType.objects.filter(name=instance.account_type).first()
+            current_user = User.objects.filter(id=instance.current_user_id).first()
+            broker = None
+            if account_type == AccountTypeEnum.BUSINESS_ADMIN.value:
+                broker = Broker.objects.create(name=instance.username)
+            
         Profile.objects.create(user=instance, account_type=account_type, broker=broker)
 
 
