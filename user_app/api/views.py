@@ -12,7 +12,7 @@ from django.db.models import Q
 from user_app.api.serializers import RegistrationSerializer
 from ..api import serializers
 from ..models import *
-from ...hintonmovie.gobals import AccountTypeEnum
+from hintonmovie.globals import AccountTypeEnum
 
 
 @api_view(['POST',])
