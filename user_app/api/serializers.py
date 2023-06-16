@@ -59,7 +59,7 @@ class SubUserListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "username", "email", "password", "account_type")
+        fields = ("id", "first_name", "last_name", "username", "email", "password", "password2", "account_type")
         extra_kwargs = {"password": {"write_only": True}}
 
 
