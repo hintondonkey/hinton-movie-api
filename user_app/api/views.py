@@ -9,7 +9,7 @@ from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, Bl
 from rest_framework import mixins
 from django.db.models import Q
 
-from user_app.api.serializers import RegistrationSerializer
+from user_app.api.serializers import RegistrationSerializer, SubUserSerializer, ProfileSerializer
 from ..api import serializers
 from ..models import *
 from hintonmovie.globals import AccountTypeEnum
@@ -68,31 +68,42 @@ class SubUserRegisterationAPIView(ListCreateAPIView):
     """
 
     permission_classes = (IsAuthenticated, )
-    serializer_class = serializers.SubUserRegisterationSerializer
+    serializer_class = SubUserSerializer
 
     def get_queryset(self):
         user = self.request.user
         query = None
-        
         if user.profile:
-            query = User.objects.filter(profile__account_type=AccountTypeEnum.BUSINESS_ADMIN.value)
-            if user.profile.is_super_admin:
-                query = User.objects.exclude(Q(id=user.id) | (Q(profile__broker__isnull=True) & Q(profile__account_type=AccountTypeEnum.EDITOR.value)))
-
+            if user.profile.is_super_admin and user.profile.broker and user.profile.broker.is_network:
+                query = Profile.objects.filter(account_type__name__in=[AccountTypeEnum.BUSINESS_ADMIN.value, AccountTypeEnum.EDITOR.value])
+            if user.profile.is_super_admin and user.profile.broker and not user.profile.broker.is_network:
+                query = Profile.objects.filter(broker=user.profile.broker) # exclude(Q(id=user.id) | (Q(profile__broker__isnull=True) & Q(profile__account_type=AccountTypeEnum.EDITOR.value)))
+            if query and query.exists():
+                query = query.exclude(user=user).exclude(account_type__isnull=True)
         return query
 
+    def list(self, request):
+        # Note the use of `get_queryset()` instead of `self.queryset`
+        queryset = self.get_queryset()
+        serializer = ProfileSerializer(queryset, many=True)
+        return Response(serializer.data)
+    
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        try:
+            serializer = self.get_serializer(data=request.data)
+        except Exception as e:
+            print(e)
+        
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
+        user = serializer.save(request.data)
         data = serializer.data
         return Response(data, status=status.HTTP_201_CREATED)
     
     def get_serializer_class(self):
         if self.request.method == 'GET':
-            return serializers.SubUserListSerializer
+            return ProfileSerializer
         else:
-            return serializers.SubUserRegisterationSerializer
+            return SubUserSerializer
     
 
 class UserLoginAPIView(GenericAPIView):

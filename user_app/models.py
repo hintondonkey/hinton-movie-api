@@ -3,7 +3,7 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from rest_framework.authtoken.models import Token
 
 
@@ -14,6 +14,20 @@ class BaseCreateModel(models.Model):
     class Meta:
         abstract = True
 
+
+class User(AbstractUser):
+    account_type = ''
+    current_user_id = None
+    
+    class Meta:
+        db_table = 'auth_user'
+
+    def __str__(self):
+        return self.username
+    
+    def save(self, *args, **kwargs):
+        super(User, self).save(*args, **kwargs)
+    
 
 class Broker(BaseCreateModel):
     name = models.TextField(default='', blank=True)
@@ -31,8 +45,7 @@ class Profile(BaseCreateModel):
     broker = models.ForeignKey(Broker, on_delete=models.CASCADE, null=True)
     account_type = models.ForeignKey(AccountType, on_delete=models.CASCADE, null=True)
     is_super_admin = models.BooleanField(default=False)
-    avatar = models.ImageField(verbose_name="Avatar", blank=True, null=True)
-    website = models.URLField(default='', null=True, blank=True)
+    avatar = models.CharField(max_length=250, null=True, default='')
     bio = models.TextField(default='', blank=True)
     phone = models.CharField(max_length=20, blank=True, null=True, default='')
     street = models.CharField(max_length=100, default='', null=True, blank=True)

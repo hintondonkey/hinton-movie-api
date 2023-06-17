@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from user_app.models import User
 
 # lets us explicitly set upload path and filename
 def upload_to(instance, filename):
