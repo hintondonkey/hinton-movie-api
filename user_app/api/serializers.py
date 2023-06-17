@@ -40,19 +40,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ("id", "username", "email")
 
 
-class UserRegisterationSerializer(serializers.ModelSerializer):
-    """
-    Serializer class to serialize registration requests and create a new user.
-    """
-    class Meta:
-        model = User
-        fields = ("id", "first_name", "last_name", "username", "email", "password")
-        extra_kwargs = {"password": {"write_only": True}, "password2": {"write_only": True}}
-
-    def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
-
-
 class UserLoginSerializer(serializers.Serializer):
     """
     Serializer class to authenticate users with email and password.
@@ -69,9 +56,6 @@ class UserLoginSerializer(serializers.Serializer):
 
 
 class SubUserSerializer(serializers.ModelSerializer):
-    # account_type = serializers.SerializerMethodField()
-    # current_user_id = serializers.SerializerMethodField()
-    # profile = ProfileSerializer(many=False)
 
     class Meta:
         model = User
@@ -96,16 +80,19 @@ class SubUserSerializer(serializers.ModelSerializer):
         account.current_user_id = current_user_id
         account.save()
         return account
+    
 
+class UserRegisterationSerializer(serializers.ModelSerializer):
+    """
+    Serializer class to serialize registration requests and create a new user.
+    """
+    class Meta:
+        model = User
+        fields = ("id", "first_name", "last_name", "username", "email", "password")
+        extra_kwargs = {"password": {"write_only": True}}
 
-
-# class SubUserRegisterationSerializer(SubUserSerializer):
-#     """
-#     Serializer class to serialize registration requests and create a new user.
-#     """
-
-#     def create(self, validated_data):
-#         return User.objects.create_user(**validated_data)
+    def create(self, validated_data):
+        return User.objects.create_user(**validated_data)
 
 
 class ProfileSerializer(UserSerializer):
@@ -127,3 +114,14 @@ class ProfileAvatarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ("avatar",)
+
+
+class AccountTypeSerializer(serializers.ModelSerializer):
+    """
+    Serializer class to serialize AccountType model
+    """
+
+    class Meta:
+        model = AccountType
+        fields = "__all__"
+

@@ -18,7 +18,8 @@ class BaseCreateModel(models.Model):
 class User(AbstractUser):
     account_type = ''
     current_user_id = None
-    
+    password2 = None
+
     class Meta:
         db_table = 'auth_user'
 
