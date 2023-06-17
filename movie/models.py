@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from user_app.models import User
+from lookup.models import Category
 
 # lets us explicitly set upload path and filename
 def upload_to(instance, filename):
@@ -33,19 +34,13 @@ class WatchList(models.Model):
 
     def str (self):
         return self.platform.title
-    
 
-class Caterogy(models.Model):
+
+class SubCategory(models.Model):
     name = models.CharField(max_length=250)
     description = models.TextField(null=False, blank=False)
     image = models.CharField(max_length=250, null=True, blank=False)
-
-
-class SubCaterogy(models.Model):
-    name = models.CharField(max_length=250)
-    description = models.TextField(null=False, blank=False)
-    image = models.CharField(max_length=250, null=True, blank=False)
-    category = models.ForeignKey(Caterogy, on_delete=models.DO_NOTHING, related_name='caterogy')
+    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, related_name='caterogy')
 
 
     
