@@ -1,7 +1,6 @@
-from django.urls import path
+from django.urls import path, include
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework_simplejwt.views import TokenRefreshView
-# from rest_framework_simplejwt.views import TokenBlacklistView
 
 
 from ..api import views
@@ -16,6 +15,7 @@ urlpatterns = [
     path("subuser/", views.SubUserRegisterationAPIView.as_view(), name="sub-user"),
     
     path("login/", views.UserLoginAPIView.as_view(), name="login-user"),
+    path("password_reset/", include('django_rest_passwordreset.urls'), name='password_reset'),
     path("token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
     path("logout/", views.UserLogoutAPIView.as_view(), name="logout-user"),
     path("", views.UserAPIView.as_view(), name="user-info"),
