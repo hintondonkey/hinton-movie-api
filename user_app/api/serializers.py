@@ -39,7 +39,7 @@ class ChangePasswordSerializer(serializers.Serializer):
     """
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
-    
+
 
 class UserSerializer(serializers.ModelSerializer):
     """
@@ -103,17 +103,6 @@ class UserRegisterationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
-
-
-class ProfileSerializer(UserSerializer):
-    """
-    Serializer class to serialize the user Profile model
-    """
-    user = SubUserSerializer(many=False)
-
-    class Meta:
-        model = Profile
-        fields = "__all__"
         
 
 class ProfileAvatarSerializer(serializers.ModelSerializer):
@@ -133,5 +122,28 @@ class AccountTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AccountType
+        fields = "__all__"
+
+
+class BrokerSerializer(serializers.ModelSerializer):
+    """
+    Serializer class to serialize Broker model
+    """
+
+    class Meta:
+        model = Broker
+        fields = "__all__"
+
+
+class ProfileSerializer(UserSerializer):
+    """
+    Serializer class to serialize the user Profile model
+    """
+    user = SubUserSerializer(many=False)
+    account_type = AccountTypeSerializer(many=False)
+    broker = BrokerSerializer(many=False)
+
+    class Meta:
+        model = Profile
         fields = "__all__"
 
