@@ -201,7 +201,6 @@ class ChangePasswordView(UpdateAPIView):
     An endpoint for changing password.
     """
     serializer_class = ChangePasswordSerializer
-    model = User
     permission_classes = (IsAuthenticated,)
 
     def get_object(self, queryset=None):
