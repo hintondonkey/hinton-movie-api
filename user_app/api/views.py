@@ -72,14 +72,17 @@ class SubUserRegisterationAPIView(ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
+        
         query = None
         if user.profile:
             if user.profile.is_super_admin and user.profile.broker and user.profile.broker.is_network:
+                
                 query = Profile.objects.filter(account_type__name__in=[AccountTypeEnum.BUSINESS_ADMIN.value, AccountTypeEnum.EDITOR.value])
             if user.profile.is_super_admin and user.profile.broker and not user.profile.broker.is_network:
                 query = Profile.objects.filter(broker=user.profile.broker) # exclude(Q(id=user.id) | (Q(profile__broker__isnull=True) & Q(profile__account_type=AccountTypeEnum.EDITOR.value)))
             if query and query.exists():
                 query = query.exclude(user=user).exclude(account_type__isnull=True)
+        print("--query: ", query)
         return query
 
     def list(self, request):
@@ -173,7 +176,7 @@ class UserProfileAPIView(RetrieveUpdateAPIView):
     """
 
     queryset = Profile.objects.all()
-    serializer_class = serializers.ProfileSerializer
+    serializer_class = ProfileSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_object(self):
