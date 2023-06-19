@@ -29,6 +29,29 @@ class SubCategoryListAPIView(ListAPIView):
         serializer = SubCategorySerializer(queryset, many=True)
         return Response(serializer.data)
     
+
+class SubCategoryEventListAPIView(ListAPIView):
+    """
+    An endpoint for the client to get sub category list related to event.
+    """
+
+    permission_classes = (AllowAny, )
+    serializer_class = SubCategorySerializer
+
+    def get_queryset(self):
+        query = []
+        event_id = self.kwargs['event_id']
+        event = Event.objects.filter(id=int(event_id) if event_id else None).first()
+        if event:
+            query = SubCategory.objects.filter(user__profile__broker=event.broker)
+        return query
+
+    def list(self, request):
+        # Note the use of `get_queryset()` instead of `self.queryset`
+        queryset = self.get_queryset()
+        serializer = SubCategorySerializer(queryset, many=True)
+        return Response(serializer.data)
+    
     
 class SubCategoryAPIView(ListCreateAPIView):
     """

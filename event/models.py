@@ -33,6 +33,7 @@ class Event(BaseCreateModel):
     status = models.BooleanField(default=True)
     category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, related_name='event_category')
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='user_create_event')
+    broker = models.ForeignKey(Broker, on_delete=models.CASCADE, null=True, related_name='broker_event')
 
 
 class MultipleImage(models.Model):
