@@ -14,7 +14,7 @@ from hintonmovie.permissions import IsBusinessAdminOrReadOnly, IsSupervisorOrRea
 
 class SubCategoryListAPIView(ListAPIView):
     """
-    An endpoint for the client to get category list.
+    An endpoint for the client to get sub category list.
     """
 
     permission_classes = (AllowAny, )
@@ -32,7 +32,7 @@ class SubCategoryListAPIView(ListAPIView):
     
 class SubCategoryAPIView(ListCreateAPIView):
     """
-    An endpoint for the client to create a new Category and get category list.
+    An endpoint for the client to create a new syv Category and get sub category list.
     """
 
     permission_classes = (IsSupervisorOrReadOnly, IsBusinessAdminOrReadOnly, )

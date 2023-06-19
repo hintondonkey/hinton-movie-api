@@ -12,7 +12,7 @@ class SubCategory(BaseCreateModel):
     image = models.CharField(max_length=250, null=True, blank=False)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='parent_subcategory')
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='user_create_subcategory')
-    broker = models.ForeignKey(Broker, on_delete=models.CASCADE, related_name='broker_subcategory')
+    # broker = models.ForeignKey(Broker, on_delete=models.CASCADE, related_name='broker_subcategory')
 
     
 class Event(BaseCreateModel):
