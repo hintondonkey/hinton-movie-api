@@ -97,7 +97,7 @@ class SubCategoryRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         pk = self.kwargs["pk"]
-        return get_object_or_404(Category, id=pk)
+        return get_object_or_404(SubCategory, id=pk)
     
 
 class EventAPIView(ListCreateAPIView):
@@ -105,7 +105,7 @@ class EventAPIView(ListCreateAPIView):
     An endpoint for the client to create a new Event and get Event list.
     """
 
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsSupervisorOrReadOnly, IsBusinessAdminOrReadOnly, )
     serializer_class = EventSerializer
 
     def get_queryset(self):
@@ -131,3 +131,17 @@ class EventAPIView(ListCreateAPIView):
         event = serializer.save(request.data)
         data = serializer.data
         return Response(data, status=status.HTTP_201_CREATED)
+    
+
+class EventRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+    """
+    Get, Update, Delete Event
+    """
+
+    queryset = Event.objects.all()
+    serializer_class = EventAPIView
+    permission_classes = (IsSupervisorOrReadOnly, IsBusinessAdminOrReadOnly, )
+
+    def get_object(self):
+        pk = self.kwargs["pk"]
+        return get_object_or_404(Event, id=pk)
