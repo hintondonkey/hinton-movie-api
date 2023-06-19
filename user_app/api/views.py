@@ -2,14 +2,14 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView, ListCreateAPIView
+from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView, ListCreateAPIView, ListAPIView, UpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 from rest_framework import mixins
 from django.db.models import Q
 
-from user_app.api.serializers import RegistrationSerializer
+from user_app.api.serializers import RegistrationSerializer, SubUserSerializer, ProfileSerializer, AccountTypeSerializer, ChangePasswordSerializer
 from ..api import serializers
 from ..models import *
 from hintonmovie.globals import AccountTypeEnum
@@ -68,31 +68,42 @@ class SubUserRegisterationAPIView(ListCreateAPIView):
     """
 
     permission_classes = (IsAuthenticated, )
-    serializer_class = serializers.SubUserRegisterationSerializer
+    serializer_class = SubUserSerializer
 
     def get_queryset(self):
         user = self.request.user
         query = None
-        
         if user.profile:
-            query = User.objects.filter(profile__account_type=AccountTypeEnum.BUSINESS_ADMIN.value)
-            if user.profile.is_super_admin:
-                query = User.objects.exclude(Q(id=user.id) | (Q(profile__broker__isnull=True) & Q(profile__account_type=AccountTypeEnum.EDITOR.value)))
-
+            if user.profile.is_super_admin and user.profile.broker and user.profile.broker.is_network:
+                query = Profile.objects.filter(account_type__name__in=[AccountTypeEnum.BUSINESS_ADMIN.value, AccountTypeEnum.EDITOR.value])
+            if user.profile.is_super_admin and user.profile.broker and not user.profile.broker.is_network:
+                query = Profile.objects.filter(broker=user.profile.broker) # exclude(Q(id=user.id) | (Q(profile__broker__isnull=True) & Q(profile__account_type=AccountTypeEnum.EDITOR.value)))
+            if query and query.exists():
+                query = query.exclude(user=user).exclude(account_type__isnull=True)
         return query
 
+    def list(self, request):
+        # Note the use of `get_queryset()` instead of `self.queryset`
+        queryset = self.get_queryset()
+        serializer = ProfileSerializer(queryset, many=True)
+        return Response(serializer.data)
+    
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        try:
+            serializer = self.get_serializer(data=request.data)
+        except Exception as e:
+            print(e)
+        
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
+        user = serializer.save(request.data)
         data = serializer.data
         return Response(data, status=status.HTTP_201_CREATED)
     
     def get_serializer_class(self):
         if self.request.method == 'GET':
-            return serializers.SubUserListSerializer
+            return ProfileSerializer
         else:
-            return serializers.SubUserRegisterationSerializer
+            return SubUserSerializer
     
 
 class UserLoginAPIView(GenericAPIView):
@@ -180,3 +191,64 @@ class UserAvatarAPIView(RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user.profile
+
+
+class ChangePasswordView(UpdateAPIView):
+    """
+    An endpoint for changing password.
+    """
+    serializer_class = ChangePasswordSerializer
+    model = User
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, queryset=None):
+        obj = self.request.user
+        return obj
+
+    def update(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            # Check old password
+            if not self.object.check_password(serializer.data.get("old_password")):
+                return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+            # set_password also hashes the password that the user will get
+            self.object.set_password(serializer.data.get("new_password"))
+            self.object.save()
+            response = {
+                'status': 'success',
+                'code': status.HTTP_200_OK,
+                'message': 'Password updated successfully',
+                'data': []
+            }
+
+            return Response(response)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class AccountTypeAPIView(ListAPIView):
+    """
+    Get, Account Type list
+    """
+
+    serializer_class = AccountTypeSerializer
+    permission_classes = (IsAuthenticated,)
+    
+    def get_queryset(self):
+        user = self.request.user
+        query = None
+        if user.profile:
+            if user.profile.is_super_admin and user.profile.broker and user.profile.broker.is_network:
+                query = AccountType.objects.all().exclude(name__in=[AccountTypeEnum.MASTER_ADMIN.value, AccountTypeEnum.EDITOR.value, AccountTypeEnum.SUPERVISOR.value, AccountTypeEnum.END_USER.value])
+            if user.profile.is_super_admin and user.profile.broker and not user.profile.broker.is_network:
+                query = AccountType.objects.filter(name__in=[AccountTypeEnum.EDITOR.value, AccountTypeEnum.SUPERVISOR.value])
+        return query
+
+    def list(self, request):
+        # Note the use of `get_queryset()` instead of `self.queryset`
+        queryset = self.get_queryset()
+        serializer = AccountTypeSerializer(queryset, many=True)
+        return Response(serializer.data)
+    
