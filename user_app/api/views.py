@@ -243,7 +243,7 @@ class AccountTypeAPIView(ListAPIView):
         query = None
         if user.profile:
             if user.profile.is_super_admin and user.profile.broker and user.profile.broker.is_network:
-                query = AccountType.objects.all().exclude(name__in=[AccountTypeEnum.MASTER_ADMIN.value, AccountTypeEnum.EDITOR.value, AccountTypeEnum.SUPERVISOR.value, AccountTypeEnum.END_USER.value])
+                query = AccountType.objects.all().exclude(name__in=[AccountTypeEnum.MASTER_ADMIN.value, AccountTypeEnum.BUSINESS_EDITOR.value, AccountTypeEnum.SUPERVISOR.value, AccountTypeEnum.END_USER.value])
             if user.profile.is_super_admin and user.profile.broker and not user.profile.broker.is_network:
                 query = AccountType.objects.filter(name__in=[AccountTypeEnum.EDITOR.value, AccountTypeEnum.SUPERVISOR.value])
         return query
