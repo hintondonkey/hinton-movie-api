@@ -10,6 +10,7 @@ class SubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategory
         fields = "__all__"
+        
 
 class MultipleImageSerializer(serializers.ModelSerializer):
     """
@@ -25,7 +26,7 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer class to serialize Event model for event
     """
-    images = MultipleImageSerializer(many=True, read_only=True)
+    event_image = MultipleImageSerializer(many=True, read_only=True)
     
     class Meta:
         model = Event

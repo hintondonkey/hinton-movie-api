@@ -139,7 +139,7 @@ class EventRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     """
 
     queryset = Event.objects.all()
-    serializer_class = EventAPIView
+    serializer_class = EventSerializer
     permission_classes = (IsSupervisorOrReadOnly, IsBusinessAdminOrReadOnly, )
 
     def get_object(self):
