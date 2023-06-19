@@ -135,6 +135,7 @@ class StreamPlatformDetailAV(APIView):
         return Response(serializer.data)
 
     def put(self, request, pk):
+        print('Successfully sent message: ')
         ischecked = request.data['ischecked']
         print(ischecked)
         platform = StreamPlatform.objects.get(pk=pk)
