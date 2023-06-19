@@ -139,11 +139,15 @@ class ProfileSerializer(UserSerializer):
     """
     Serializer class to serialize the user Profile model
     """
-    user = SubUserSerializer(many=False)
-    account_type = AccountTypeSerializer(many=False)
-    broker = BrokerSerializer(many=False)
+    user = SubUserSerializer(many=False, read_only=True)
+    account_type = AccountTypeSerializer(many=False, read_only=True)
+    broker = BrokerSerializer(many=False, read_only=True)
 
     class Meta:
         model = Profile
         fields = "__all__"
+        read_only_fields = ('is_super_admin', )
+
+
+
 
