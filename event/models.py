@@ -32,6 +32,7 @@ class Event(BaseCreateModel):
     approval = models.CharField(max_length=250)
     status = models.BooleanField(default=True)
     category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, related_name='event_category')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='user_create_event')
 
 
 class MultipleImage(models.Model):
