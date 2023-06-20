@@ -84,7 +84,6 @@ class SubUserRegisterationAPIView(ListCreateAPIView):
                 query = Profile.objects.filter(broker=user.profile.broker) # exclude(Q(id=user.id) | (Q(profile__broker__isnull=True) & Q(profile__account_type=AccountTypeEnum.EDITOR.value)))
             if query and query.exists():
                 query = query.exclude(user=user).exclude(account_type__isnull=True)
-        print("--query: ", query)
         return query
 
     def list(self, request):

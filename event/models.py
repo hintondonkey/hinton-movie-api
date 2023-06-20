@@ -11,14 +11,14 @@ class SubCategory(BaseCreateModel):
     description = models.TextField(null=False, blank=False)
     image = models.CharField(max_length=250, null=True, blank=False)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='parent_subcategory')
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='user_create_subcategory')
-    # broker = models.ForeignKey(Broker, on_delete=models.CASCADE, related_name='broker_subcategory')
+    created_user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='user_create_subcategory')
+    broker = models.ForeignKey(Broker, on_delete=models.CASCADE, null=True, related_name='broker_subcategory')
 
     
 class Event(BaseCreateModel):
     title = models.CharField(max_length=250)
     summary = models.TextField(null=False, blank=False)
-    image = models.CharField(max_length=250, null=True, blank=False)
+    icon = models.CharField(max_length=250, null=True, blank=False)
     event_date = models.DateField(null=True, blank=False)
     event_time = models.TimeField(null=True, blank=True)
     end_event_date = models.DateField(null=True, blank=False)
@@ -32,7 +32,7 @@ class Event(BaseCreateModel):
     approval = models.CharField(max_length=250)
     status = models.BooleanField(default=True)
     category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, related_name='event_category')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='user_create_event')
+    created_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='user_create_event')
     broker = models.ForeignKey(Broker, on_delete=models.CASCADE, null=True, related_name='broker_event')
 
 
