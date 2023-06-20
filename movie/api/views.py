@@ -1,11 +1,12 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, APIView
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework import status
 from movie.api.serializers import WatchListSerializer, StreamPlatformSerializer
 from movie.models import WatchList, StreamPlatform
 from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS, IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView, ListCreateAPIView, ListAPIView, UpdateAPIView
 import firebase_admin
 from firebase_admin import credentials, messaging
 import os
@@ -260,3 +261,11 @@ class GetNotification(APIView):
             noti, many=True, context={'request': request})
         print("check notioiiii: ", Response(serializer.data))
         return Response(serializer.data)
+    
+
+class NumberOfConnectionMovieUpdateAPIView(RetrieveUpdateAPIView):
+    permission_classes = (AllowAny, )
+    serializer_class = StreamPlatformSerializer
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)

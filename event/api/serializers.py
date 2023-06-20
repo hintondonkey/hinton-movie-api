@@ -10,13 +10,24 @@ class SubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategory
         fields = "__all__"
+        
+
+class MultipleImageSerializer(serializers.ModelSerializer):
+    """
+    Serializer class to serialize Image Event model for event
+    """
+
+    class Meta:
+        model = MultipleImage
+        fields = "__all__"
 
 
-class EventSerializer(serializers.ModelSerializer):
+class EventSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer class to serialize Event model for event
     """
-
+    event_image = MultipleImageSerializer(many=True, read_only=True)
+    
     class Meta:
         model = Event
         fields = "__all__"
