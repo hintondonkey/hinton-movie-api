@@ -2,17 +2,19 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView, ListCreateAPIView, ListAPIView, UpdateAPIView
+from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView, ListCreateAPIView, ListAPIView, UpdateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 from rest_framework import mixins
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 
-from user_app.api.serializers import RegistrationSerializer, SubUserSerializer, ProfileSerializer, AccountTypeSerializer, ChangePasswordSerializer
+from user_app.api.serializers import RegistrationSerializer, SubUserSerializer, ProfileSerializer, AccountTypeSerializer, ChangePasswordSerializer, UserSerializer
 from ..api import serializers
 from ..models import *
 from hintonmovie.globals import AccountTypeEnum
+from hintonmovie.permissions import IsSupervisorOrReadOnly, IsBusinessAdminOrReadOnly
 
 
 @api_view(['POST',])
@@ -82,7 +84,6 @@ class SubUserRegisterationAPIView(ListCreateAPIView):
                 query = Profile.objects.filter(broker=user.profile.broker) # exclude(Q(id=user.id) | (Q(profile__broker__isnull=True) & Q(profile__account_type=AccountTypeEnum.EDITOR.value)))
             if query and query.exists():
                 query = query.exclude(user=user).exclude(account_type__isnull=True)
-        print("--query: ", query)
         return query
 
     def list(self, request):
@@ -133,7 +134,7 @@ class UserLogoutAPIView(GenericAPIView):
     """
     An endpoint to logout users.
     """
-    serializer_class = serializers.UserSerializer
+    serializer_class = UserSerializer
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
@@ -144,18 +145,6 @@ class UserLogoutAPIView(GenericAPIView):
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-    
-    
-    # def post(self, request, *args, **kwargs):
-    #     if self.request.data.get('all'):
-    #         token: OutstandingToken
-    #         for token in OutstandingToken.objects.filter(user=request.user):
-    #             _, _ = BlacklistedToken.objects.get_or_create(token=token)
-    #         return Response({"status": "OK, goodbye, all refresh tokens blacklisted"})
-    #     refresh_token = self.request.data.get('refresh_token')
-    #     token = RefreshToken(token=refresh_token)
-    #     token.blacklist()
-    #     return Response({"status": "OK, goodbye"})
 
 
 class UserAPIView(RetrieveUpdateAPIView):
@@ -164,10 +153,24 @@ class UserAPIView(RetrieveUpdateAPIView):
     """
 
     permission_classes = (IsAuthenticated,)
-    serializer_class = serializers.UserSerializer
+    serializer_class = UserSerializer
 
     def get_object(self):
         return self.request.user
+    
+
+class SubUserRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+    """
+    Get, Update, Delete User
+    """
+
+    queryset = User.objects.all()
+    serializer_class = SubUserSerializer
+    permission_classes = (IsSupervisorOrReadOnly, IsBusinessAdminOrReadOnly, )
+
+    def get_object(self):
+        pk = self.kwargs["pk"]
+        return get_object_or_404(User, id=pk)
     
 
 class UserProfileAPIView(RetrieveUpdateAPIView):
