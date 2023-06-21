@@ -14,7 +14,7 @@ from user_app.api.serializers import RegistrationSerializer, SubUserSerializer, 
 from ..api import serializers
 from ..models import *
 from hintonmovie.globals import AccountTypeEnum
-from hintonmovie.permissions import IsSupervisorOrReadOnly, IsBusinessAdminOrReadOnly
+from hintonmovie.permissions import IsSupervisorOrReadOnly, IsBusinessAdminOrReadOnly, IsMasterAdminOrReadOnly
 
 
 @api_view(['POST',])
@@ -166,11 +166,20 @@ class SubUserRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
 
     queryset = User.objects.all()
     serializer_class = SubUserSerializer
-    permission_classes = (IsSupervisorOrReadOnly, IsBusinessAdminOrReadOnly, )
+    permission_classes = (IsSupervisorOrReadOnly, IsBusinessAdminOrReadOnly, IsMasterAdminOrReadOnly, )
 
     def get_object(self):
         pk = self.kwargs["pk"]
         return get_object_or_404(User, id=pk)
+    
+    def patch(self, request, pk):
+        user = self.get_object()
+        serializer = self.get_serializer(instance=user, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.update(user, request.data)
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
     
 
 class UserProfileAPIView(RetrieveUpdateAPIView):
@@ -179,7 +188,7 @@ class UserProfileAPIView(RetrieveUpdateAPIView):
     """
 
     queryset = Profile.objects.all()
-    serializer_class = ProfileSerializer
+    serializer_class = serializers.ProfileAvatarSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_object(self):
