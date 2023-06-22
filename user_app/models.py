@@ -1,10 +1,56 @@
 
 from django.conf import settings
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+from django.db import models
+from django.contrib.auth.models import AbstractUser
+from lookup.models import BaseCreateModel, Category
 from rest_framework.authtoken.models import Token
 
-@receiver(post_save, sender=settings.AUTH_USER_MODEL) 
-def create_auth_token(sender, instance=None, created=False, **kwargs):
-    if created:
-        Token.objects.create(user=instance)
+
+class User(AbstractUser):
+    account_type = ''
+    current_user_id = None
+    password2 = None
+
+    class Meta:
+        db_table = 'auth_user'
+
+    def __str__(self):
+        return self.username
+    
+    def save(self, *args, **kwargs):
+        super(User, self).save(*args, **kwargs)
+    
+
+class Broker(BaseCreateModel):
+    name = models.TextField(default='', blank=True)
+    is_network = models.BooleanField(default=False)
+    number_of_users = models.IntegerField(default=0)
+
+
+class AccountType(BaseCreateModel):
+    name = models.CharField(max_length=100)
+    description = models.TextField(default='', null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Profile(BaseCreateModel):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True, null=True, db_index=True)
+    broker = models.ForeignKey(Broker, on_delete=models.CASCADE, null=True)
+    account_type = models.ForeignKey(AccountType, on_delete=models.CASCADE, null=True)
+    is_super_admin = models.BooleanField(default=False)
+    avatar = models.CharField(max_length=250, null=True, default='')
+    bio = models.TextField(default='', blank=True)
+    phone = models.CharField(max_length=20, blank=True, null=True, default='')
+    street = models.CharField(max_length=100, default='', null=True, blank=True)
+    city = models.CharField(max_length=100, default='', null=True, blank=True)
+    country = models.CharField(max_length=100, default='', null=True, blank=True)
+    organization = models.CharField(max_length=100, default='', null=True, blank=True)
+
+
+class BrokerService(BaseCreateModel):
+    name = models.TextField(default='', null=True, blank=True)
+    broker = models.ForeignKey(Broker, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING)
+

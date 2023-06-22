@@ -14,11 +14,13 @@ class StreamPlatformSerializer(serializers.ModelSerializer):
     class  Meta:
         model = StreamPlatform
         fields = '__all__'
+
     def validate(self, data):
         if "title" in data and "description" in data and data['title'] == data['description']:
             raise serializers.ValidationError("Title and Description should be different!")
         else:
             return data
+        
     def validate_title(self, value):
         if len(value) < 2:
             raise serializers.validationError("Name is too short!")

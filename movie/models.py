@@ -1,9 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
+from user_app.models import User
+from lookup.models import Category
+
 
 # lets us explicitly set upload path and filename
 def upload_to(instance, filename):
     return '{filename}'.format(filename=filename)
+    
+
 # Create your models here.
 class StreamPlatform(models.Model):
     title = models.CharField(max_length=250)
@@ -17,8 +22,11 @@ class StreamPlatform(models.Model):
     create_date = models.DateField(auto_now_add=True)
     titleNoti = models.CharField(max_length=250, null=True, blank=True)
     summaryNoti = models.TextField(null=True, blank=True)
+    number_of_connection = models.IntegerField(default=0, blank=True, null=True)
+
     def str (self):
         return self.title
+
 
 class WatchList(models.Model):
     date_picker = models.DateField(null=False, blank=False)
@@ -31,4 +39,13 @@ class WatchList(models.Model):
 
     def str (self):
         return self.platform.title
+
+
+class SubCategory(models.Model):
+    name = models.CharField(max_length=250)
+    description = models.TextField(null=False, blank=False)
+    image = models.CharField(max_length=250, null=True, blank=False)
+    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, related_name='caterogy')
+
+
     
