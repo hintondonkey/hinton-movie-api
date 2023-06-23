@@ -14,6 +14,16 @@ class SubCategory(BaseCreateModel):
     created_user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='user_create_subcategory')
     broker = models.ForeignKey(Broker, on_delete=models.CASCADE, null=True, related_name='broker_subcategory')
 
+    @property
+    def total_event(self):
+        num = 0
+        try:
+            num = self.event_category.count()
+        except Exception as e:
+            num = 0
+            print(e)
+        return num
+
     
 class Event(BaseCreateModel):
     title = models.CharField(max_length=250)
@@ -31,6 +41,7 @@ class Event(BaseCreateModel):
     notification_summary = models.TextField(null=True, blank=True)
     approval = models.CharField(max_length=250)
     status = models.BooleanField(default=True)
+    is_horizontal = models.BooleanField(default=True)
     category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, related_name='event_category')
     created_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='user_create_event')
     broker = models.ForeignKey(Broker, on_delete=models.CASCADE, null=True, related_name='broker_event')
