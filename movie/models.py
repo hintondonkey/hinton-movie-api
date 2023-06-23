@@ -1,5 +1,5 @@
 from django.db import models
-from user_app.models import User
+from user_app.models import User, Broker
 from lookup.models import Category
 from services.models import SubCategory
 
@@ -28,6 +28,7 @@ class StreamPlatform(models.Model):
     is_horizontal = models.BooleanField(default=True)
     category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, null=True, related_name='stream_platform_caterogy')
     subcategory = models.ManyToManyField(SubCategory, null=True, related_name='stream_platform_subcaterogy')
+    broker = models.ForeignKey(Broker, on_delete=models.CASCADE, null=True, related_name='stream_platform_broker')
 
     def str (self):
         return self.title
