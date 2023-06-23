@@ -18,4 +18,6 @@ class CategorySerializer(serializers.ModelSerializer):
         if caterory:
             num = caterory.total_stream_platform
         return num
+    
+        
 

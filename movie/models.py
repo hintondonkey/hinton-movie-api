@@ -1,6 +1,7 @@
 from django.db import models
 from user_app.models import User
-from lookup.models import Category, SubCategory
+from lookup.models import Category
+from services.models import SubCategory
 
 
 # lets us explicitly set upload path and filename

@@ -2,7 +2,8 @@
 from django.conf import settings
 from django.db import models
 
-from lookup.models import Category, BaseCreateModel, SubCategory
+from lookup.models import Category, BaseCreateModel
+from services.models import SubCategory
 from user_app.models import User, Broker
 
     
