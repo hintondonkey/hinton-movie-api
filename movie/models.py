@@ -1,7 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import User
-from user_app.models import User
+from user_app.models import User, Broker
 from lookup.models import Category
+from services.models import SubCategory
 
 
 # lets us explicitly set upload path and filename
@@ -23,6 +23,12 @@ class StreamPlatform(models.Model):
     titleNoti = models.CharField(max_length=250, null=True, blank=True)
     summaryNoti = models.TextField(null=True, blank=True)
     number_of_connection = models.IntegerField(default=0, blank=True, null=True)
+    approval = models.CharField(max_length=250, blank=True, null=True)
+    status = models.BooleanField(default=True)
+    is_horizontal = models.BooleanField(default=True)
+    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, null=True, related_name='stream_platform_caterogy')
+    subcategory = models.ManyToManyField(SubCategory, null=True, related_name='stream_platform_subcaterogy')
+    broker = models.ForeignKey(Broker, on_delete=models.CASCADE, null=True, related_name='stream_platform_broker')
 
     def str (self):
         return self.title
@@ -40,12 +46,6 @@ class WatchList(models.Model):
     def str (self):
         return self.platform.title
 
-
-class SubCategory(models.Model):
-    name = models.CharField(max_length=250)
-    description = models.TextField(null=False, blank=False)
-    image = models.CharField(max_length=250, null=True, blank=False)
-    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, related_name='caterogy')
 
 
     

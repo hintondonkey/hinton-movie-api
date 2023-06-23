@@ -2,7 +2,7 @@
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from lookup.models import BaseCreateModel, Category
+from hintonmovie.models import BaseCreateModel
 from rest_framework.authtoken.models import Token
 
 
@@ -47,10 +47,4 @@ class Profile(BaseCreateModel):
     city = models.CharField(max_length=100, default='', null=True, blank=True)
     country = models.CharField(max_length=100, default='', null=True, blank=True)
     organization = models.CharField(max_length=100, default='', null=True, blank=True)
-
-
-class BrokerService(BaseCreateModel):
-    name = models.TextField(default='', null=True, blank=True)
-    broker = models.ForeignKey(Broker, on_delete=models.CASCADE)
-    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING)
 
