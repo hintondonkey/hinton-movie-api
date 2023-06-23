@@ -43,7 +43,7 @@ class CategoryListCreateAPIView(ListCreateAPIView):
 
     permission_classes = (IsMasterAdminOrReadOnly, )
     serializer_class = CategorySerializer
-    
+
     def get_queryset(self):
         return Category.objects.all()
 
@@ -54,7 +54,7 @@ class CategoryListCreateAPIView(ListCreateAPIView):
         return Response(serializer.data)
     
     def create(self, request, *args, **kwargs):
-        category_name = str(request.POST['name']).strip() if request.POST['name'] else None
+        category_name = str(request.data['name']).strip() if request.data['name'] else None
         if Category.objects.filter(name=category_name).exists():
             raise ValidationError(("This category already existed!"))
         else:
