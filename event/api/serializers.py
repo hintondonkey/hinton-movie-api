@@ -8,10 +8,12 @@ class SubCategorySerializer(serializers.ModelSerializer):
     Serializer class to serialize SubCategory model for event
     """
     broker = BrokerSerializer(many=False, read_only=True)
+    total_event = serializers.SerializerMethodField(source='total_event')
 
     class Meta:
         model = SubCategory
         fields = "__all__"
+        extra_fields = ['total_event']
         
 
 class MultipleImageSerializer(serializers.ModelSerializer):
