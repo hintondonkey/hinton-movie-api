@@ -53,16 +53,16 @@ class SubCategoryAPIView(ListCreateAPIView):
         return Response(serializer.data)
     
     def post(self, request, *args, **kwargs):
+        broker_id = request.user.profile.broker_id
+        created_user_id = request.user.id
         try:
             serializer = self.get_serializer(data=request.data)
         except Exception as e:
             print(e)
         
-        
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-        data = serializer.data
-        return Response(data, status=status.HTTP_201_CREATED)
+        serializer_data = serializer.save(broker_id=broker_id, created_user_id=created_user_id)
+        return Response(SubCategorySerializer(serializer_data).data, status=status.HTTP_201_CREATED)
     
 
 class SubCategoryRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
