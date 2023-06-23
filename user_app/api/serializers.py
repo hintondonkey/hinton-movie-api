@@ -3,6 +3,7 @@ from rest_framework import serializers
 from user_app.models import User
 from django.contrib.auth import authenticate
 from hintonmovie.globals import AccountTypeEnum
+from lookup.api.serializers import CategorySerializer
 
 
 class RegistrationSerializer (serializers.ModelSerializer):
@@ -169,6 +170,18 @@ class ProfileSerializer(UserSerializer):
         model = Profile
         fields = "__all__"
         read_only_fields = ('is_super_admin', )
+
+
+class BrokerServiceSerializer(serializers.ModelSerializer):
+    """
+    Serializer class to serialize BrokerService model
+    """
+    broker = BrokerSerializer(many=False, read_only=True)
+    category = CategorySerializer(many=False, read_only=True)
+    
+    class Meta:
+        model = BrokerService
+        fields = "__all__"
 
 
 
