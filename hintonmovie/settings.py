@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'user_app',
     'lookup',
     'event',
+    'services',
 ]
 
 MIDDLEWARE = [

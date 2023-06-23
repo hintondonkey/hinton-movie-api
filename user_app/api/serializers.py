@@ -172,17 +172,5 @@ class ProfileSerializer(UserSerializer):
         read_only_fields = ('is_super_admin', )
 
 
-class BrokerServiceSerializer(serializers.ModelSerializer):
-    """
-    Serializer class to serialize BrokerService model
-    """
-    broker = BrokerSerializer(many=False, read_only=True)
-    category = CategorySerializer(many=False, read_only=True)
-    
-    class Meta:
-        model = BrokerService
-        fields = "__all__"
-
-
 
 
