@@ -58,8 +58,9 @@ class SubCategoryAPIView(ListCreateAPIView):
         except Exception as e:
             print(e)
         
+        
         serializer.is_valid(raise_exception=True)
-        subcategory = serializer.save(request.data)
+        serializer.save()
         data = serializer.data
         return Response(data, status=status.HTTP_201_CREATED)
     
