@@ -5,7 +5,7 @@ from django.core.mail import send_mail, EmailMessage
 from django.urls import reverse
 
 from ..models import *
-from hintonmovie.globals import AccountTypeEnum
+from hintonmovie.globals import *
 from hintonmovie.settings import EMAIL_HOST_USER
 
 
@@ -21,14 +21,16 @@ def create_user_profile(sender, instance, created, **kwargs):
         try:
             broker = None
             account_type = None
+            business_type = None
             creating_user = User.objects.filter(id=instance.id).first()
             try:
                 account_type = AccountType.objects.filter(name=instance.account_type).first()
+                business_type = BusinessType.objects.filter(name=instance.business_type).first()
             except Exception as e:
                 print("Getting account_type_name error as message: ", e)
 
             if (account_type and account_type.name == AccountTypeEnum.BUSINESS_ADMIN.value) or creating_user.is_superuser:
-                broker = Broker.objects.create(name=creating_user.username, is_network=creating_user.is_superuser)
+                broker = Broker.objects.create(name=creating_user.username, is_network=creating_user.is_superuser, business_type=business_type)
             else:
                 current_user = User.objects.filter(id=int(instance.current_user_id)).first()
                 broker = Broker.objects.filter(id=current_user.profile.broker_id if current_user and current_user.profile else None).first()

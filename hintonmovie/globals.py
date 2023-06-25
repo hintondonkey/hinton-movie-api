@@ -8,3 +8,9 @@ class AccountTypeEnum(Enum):
     SUPERVISOR = "Supervisor"
     BUSINESS_EDITOR = "Business_Editor"
     END_USER = "End_User"
+
+
+class BusinessTypeEnum(Enum):
+    NPO = "NPO"
+    PROFIT = 'Profit'
+    GOVERNMENT = "Government"

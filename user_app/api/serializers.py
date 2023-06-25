@@ -100,19 +100,31 @@ class AccountTypeSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class BusinessTypeSerializer(serializers.ModelSerializer):
+    """
+    Serializer class to serialize BusinessType model
+    """
+
+    class Meta:
+        model = BusinessType
+        fields = "__all__"
+
+
 class SubUserSerializer(serializers.ModelSerializer):
     account_type = serializers.CharField(source='profile.account_type.name')
+    business_type = serializers.CharField(source='profile.broker.business_type.name')
 
     class Meta:
         model = User
-        fields = ("id", "first_name", "last_name", "username", "email", "password", "account_type")
+        fields = ("id", "first_name", "last_name", "username", "email", "password", "account_type", "business_type")
         extra_kwargs = {"password": {"write_only": True}}
-        related_fields = ['profile']
+        related_fields = ['profile', 'broker']
 
     def save(self, data={}):
         password = self.validated_data['password']
         password2 = data.get('password2', '')
         account_type = data.get('account_type', '')
+        business_type = data.get('business_type', '')
         current_user_id = data.get('current_user_id', '')
 
         if password != password2:
@@ -124,6 +136,7 @@ class SubUserSerializer(serializers.ModelSerializer):
         account = User(email=self.validated_data['email'], username=self.validated_data['username'], first_name=self.validated_data['first_name'], last_name=self.validated_data['last_name'])
         account.set_password(password)
         account.account_type = account_type
+        account.business_type = business_type
         account.current_user_id = current_user_id
         account.save()
         return account
@@ -139,6 +152,15 @@ class SubUserSerializer(serializers.ModelSerializer):
                 value = None
                 if account_type:
                     related_instance.account_type = account_type
+                    related_instance.save()
+            if related_obj_name == "broker":
+                attr_name = 'business_type'
+                data = validated_data.pop(attr_name)
+                related_instance = instance.profile.broker if instance and instance.profile else None
+                
+                business_type = BusinessType.objects.filter(name=data).first()
+                if business_type and related_instance:
+                    related_instance.business_type = business_type
                     related_instance.save()
         password = validated_data.get("password", None)
         if password and password != '':
