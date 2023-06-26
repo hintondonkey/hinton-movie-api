@@ -1,7 +1,6 @@
 
 from django.conf import settings
 from django.db import models
-from user_app.models import Broker, User
 from hintonmovie.models import BaseCreateModel
 
 

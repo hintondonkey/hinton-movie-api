@@ -21,10 +21,19 @@ class User(AbstractUser):
         super(User, self).save(*args, **kwargs)
     
 
+class BusinessType(BaseCreateModel):
+    name = models.CharField(max_length=100)
+    description = models.TextField(default='', null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+    
+
 class Broker(BaseCreateModel):
     name = models.TextField(default='', blank=True)
     is_network = models.BooleanField(default=False)
     number_of_users = models.IntegerField(default=0)
+    busines_type = models.ForeignKey(BusinessType, on_delete=models.CASCADE, null=True)
 
 
 class AccountType(BaseCreateModel):

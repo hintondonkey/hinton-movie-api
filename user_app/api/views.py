@@ -10,7 +10,7 @@ from rest_framework import mixins
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
-from user_app.api.serializers import RegistrationSerializer, SubUserSerializer, ProfileSerializer, AccountTypeSerializer, ChangePasswordSerializer, UserSerializer
+from user_app.api.serializers import RegistrationSerializer, SubUserSerializer, ProfileSerializer, AccountTypeSerializer, ChangePasswordSerializer, UserSerializer, BusinessTypeSerializer
 from ..api import serializers
 from ..models import *
 from hintonmovie.globals import AccountTypeEnum
@@ -266,4 +266,29 @@ class AccountTypeAPIView(ListAPIView):
         queryset = self.get_queryset()
         serializer = AccountTypeSerializer(queryset, many=True)
         return Response(serializer.data)
+    
+
+class BusinessTypeAPIView(ListAPIView):
+    """
+    Get, Business Type list
+    """
+
+    serializer_class = BusinessTypeSerializer
+    permission_classes = (IsMasterAdminOrReadOnly,)
+    
+    def get_queryset(self):
+        user = self.request.user
+        query = None
+        if user.profile:
+            if user.profile.is_super_admin and user.profile.broker and user.profile.broker.is_network:
+                query = BusinessType.objects.all()
+            
+        return query
+
+    def list(self, request):
+        # Note the use of `get_queryset()` instead of `self.queryset`
+        queryset = self.get_queryset()
+        serializer = BusinessTypeSerializer(queryset, many=True)
+        return Response(serializer.data)
+    
     

@@ -5,7 +5,9 @@ from django.core.mail import send_mail, EmailMessage
 from django.urls import reverse
 
 from ..models import *
-from hintonmovie.globals import AccountTypeEnum
+from services.models import BrokerService
+from lookup.models import Category
+from hintonmovie.globals import *
 from hintonmovie.settings import EMAIL_HOST_USER
 
 
@@ -21,14 +23,16 @@ def create_user_profile(sender, instance, created, **kwargs):
         try:
             broker = None
             account_type = None
+            business_type = None
             creating_user = User.objects.filter(id=instance.id).first()
             try:
                 account_type = AccountType.objects.filter(name=instance.account_type).first()
+                business_type = BusinessType.objects.filter(name=instance.business_type).first()
             except Exception as e:
                 print("Getting account_type_name error as message: ", e)
 
             if (account_type and account_type.name == AccountTypeEnum.BUSINESS_ADMIN.value) or creating_user.is_superuser:
-                broker = Broker.objects.create(name=creating_user.username, is_network=creating_user.is_superuser)
+                broker = Broker.objects.create(name=creating_user.username, is_network=creating_user.is_superuser, business_type=business_type)
             else:
                 current_user = User.objects.filter(id=int(instance.current_user_id)).first()
                 broker = Broker.objects.filter(id=current_user.profile.broker_id if current_user and current_user.profile else None).first()
@@ -60,6 +64,19 @@ def create_user_profile(sender, instance, created, **kwargs):
                     msg.send()
             except Exception as e:
                 print("Getting error while sending email for new Business Admin Account as message: ", e)
+
+            try:
+                
+                for category in Category.objects.all():
+                    name = category.name + ' Management'
+                    if not BrokerService.objects.filter(name=name, broker=broker).exists():
+                        BrokerService.objects.create(name=name, broker=broker, category=category, price=10)
+                account_management = 'Account Management'
+                if not BrokerService.objects.filter(name=account_management, broker=broker).exists():
+                    BrokerService.objects.create(name=account_management, broker=broker, category=None, price=10)
+
+            except Exception as e:
+                print("Getting create_broker_service error as message: ", e)
 
         except Exception as e:
             print("Getting create_user_profile error as message: ", e)

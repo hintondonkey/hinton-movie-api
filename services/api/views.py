@@ -6,6 +6,8 @@ from rest_framework import mixins
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
+from lookup.models import Category
+from lookup.api.serializers import CategorySerializer
 from ..api.serializers import SubCategorySerializer
 from ..models import *
 from hintonmovie.globals import AccountTypeEnum
@@ -23,6 +25,24 @@ class SubCategoryListAPIView(ListAPIView):
 
     def get_queryset(self):
         return SubCategory.objects.all()
+
+    def list(self, request):
+        # Note the use of `get_queryset()` instead of `self.queryset`
+        queryset = self.get_queryset()
+        serializer = SubCategorySerializer(queryset, many=True)
+        return Response(serializer.data)
+    
+
+class SubCategoryListCategoryAPIView(ListAPIView):
+    """
+    An endpoint for the client to get sub category list from category.
+    """
+
+    permission_classes = (AllowAny, )
+    serializer_class = SubCategorySerializer
+
+    def get_queryset(self):
+        return SubCategory.objects.filter(category_id=self.args['category_id'])
 
     def list(self, request):
         # Note the use of `get_queryset()` instead of `self.queryset`
@@ -53,16 +73,16 @@ class SubCategoryAPIView(ListCreateAPIView):
         return Response(serializer.data)
     
     def post(self, request, *args, **kwargs):
+        broker_id = request.user.profile.broker_id
+        created_user_id = request.user.id
         try:
             serializer = self.get_serializer(data=request.data)
         except Exception as e:
             print(e)
         
-        
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-        data = serializer.data
-        return Response(data, status=status.HTTP_201_CREATED)
+        serializer_data = serializer.save(broker_id=broker_id, created_user_id=created_user_id)
+        return Response(SubCategorySerializer(serializer_data).data, status=status.HTTP_201_CREATED)
     
 
 class SubCategoryRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
@@ -77,4 +97,23 @@ class SubCategoryRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         pk = self.kwargs["pk"]
         return get_object_or_404(SubCategory, id=pk)
+    
+
+
+class CategoryBrokerListAPIView(ListAPIView):
+    """
+    An endpoint for the client to get category list of broker.
+    """
+    permission_classes = (AllowAny, )
+    serializer_class = CategorySerializer
+
+    def get_queryset(self):
+        category_id_list = BrokerService.objects.filter(broker_id=self.args['broker_id'], is_active=True).values_list('category_id')
+        return Category.objects.filter(id__in=category_id_list)
+
+    def list(self, request):
+        # Note the use of `get_queryset()` instead of `self.queryset`
+        queryset = self.get_queryset()
+        serializer = CategorySerializer(queryset, many=True)
+        return Response(serializer.data)
     
