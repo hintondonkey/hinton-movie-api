@@ -23,6 +23,7 @@ class SubCategorySerializer(serializers.ModelSerializer):
     broker = BrokerSerializer(many=False, read_only=True)
     total_event = serializers.SerializerMethodField(source='get_total_event')
     created_user = UserSerializer(many=False, read_only=True)
+    category = CategorySerializer(many=False, read_only=True)
 
     class Meta:
         model = SubCategory

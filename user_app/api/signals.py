@@ -5,6 +5,8 @@ from django.core.mail import send_mail, EmailMessage
 from django.urls import reverse
 
 from ..models import *
+from services.models import BrokerService
+from lookup.models import Category
 from hintonmovie.globals import *
 from hintonmovie.settings import EMAIL_HOST_USER
 
@@ -62,6 +64,19 @@ def create_user_profile(sender, instance, created, **kwargs):
                     msg.send()
             except Exception as e:
                 print("Getting error while sending email for new Business Admin Account as message: ", e)
+
+            try:
+                
+                for category in Category.objects.all():
+                    name = category.name + ' Management'
+                    if not BrokerService.objects.filter(name=name, broker=broker).exists():
+                        BrokerService.objects.create(name=name, broker=broker, category=category, price=10)
+                account_management = 'Account Management'
+                if not BrokerService.objects.filter(name=account_management, broker=broker).exists():
+                    BrokerService.objects.create(name=account_management, broker=broker, category=None, price=10)
+
+            except Exception as e:
+                print("Getting create_broker_service error as message: ", e)
 
         except Exception as e:
             print("Getting create_user_profile error as message: ", e)
