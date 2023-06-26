@@ -10,7 +10,7 @@ def create_broker_service(sender, instance, created, **kwargs):
     if created and instance:
         try:
             broker_list = Broker.objects.all()
-            instance.current_user_id
+
             for broker in broker_list:
                 # business_admin = User.objects.filter()
                 name = instance.name + ' Management'

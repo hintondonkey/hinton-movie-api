@@ -8,6 +8,7 @@ from rest_framework.authtoken.models import Token
 
 class User(AbstractUser):
     account_type = ''
+    business_type = ''
     current_user_id = None
     password2 = None
 
@@ -33,7 +34,7 @@ class Broker(BaseCreateModel):
     name = models.TextField(default='', blank=True)
     is_network = models.BooleanField(default=False)
     number_of_users = models.IntegerField(default=0)
-    busines_type = models.ForeignKey(BusinessType, on_delete=models.CASCADE, null=True)
+    business_type = models.ForeignKey(BusinessType, on_delete=models.CASCADE, null=True)
 
 
 class AccountType(BaseCreateModel):
