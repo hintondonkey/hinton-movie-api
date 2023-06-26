@@ -112,7 +112,7 @@ class BusinessTypeSerializer(serializers.ModelSerializer):
 
 class SubUserSerializer(serializers.ModelSerializer):
     account_type = serializers.CharField(source='profile.account_type.name')
-    business_type = serializers.CharField(source='profile.broker.business_type.name')
+    business_type = serializers.CharField(source='profile.broker.business_type.name', required=False, allow_null=True, allow_blank=True)
 
     class Meta:
         model = User
@@ -132,13 +132,14 @@ class SubUserSerializer(serializers.ModelSerializer):
 
         if User.objects.filter(email=self.validated_data['email']).exists():
             raise serializers.ValidationError({'error': 'Email already exists!'})
-    
+       
         account = User(email=self.validated_data['email'], username=self.validated_data['username'], first_name=self.validated_data['first_name'], last_name=self.validated_data['last_name'])
         account.set_password(password)
         account.account_type = account_type
         account.business_type = business_type
         account.current_user_id = current_user_id
         account.save()
+      
         return account
     
     def update(self, instance, validated_data):
@@ -174,6 +175,7 @@ class BrokerSerializer(serializers.ModelSerializer):
     """
     Serializer class to serialize Broker model
     """
+    business_type = BusinessTypeSerializer(many=False, read_only=True)
 
     class Meta:
         model = Broker

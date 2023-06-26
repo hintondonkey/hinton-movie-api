@@ -97,7 +97,6 @@ class SubUserRegisterationAPIView(ListCreateAPIView):
             serializer = self.get_serializer(data=request.data)
         except Exception as e:
             print(e)
-        
         serializer.is_valid(raise_exception=True)
         user = serializer.save(request.data)
         data = serializer.data
