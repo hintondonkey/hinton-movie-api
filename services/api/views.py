@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.generics import ListCreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListCreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import mixins
 from django.db.models import Q
@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 
 from lookup.models import Category
 from lookup.api.serializers import CategorySerializer
-from ..api.serializers import SubCategorySerializer
+from ..api.serializers import SubCategorySerializer, BrokerServiceSerializer
 from ..models import *
 from hintonmovie.globals import AccountTypeEnum
 from hintonmovie.permissions import IsBusinessAdminOrReadOnly, IsSupervisorOrReadOnly, IsMasterAdminOrReadOnly, IsEditorOrReadOnly, IsBusinessEditorOrReadOnly
@@ -98,6 +98,19 @@ class SubCategoryRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
         pk = self.kwargs["pk"]
         return get_object_or_404(SubCategory, id=pk)
     
+
+class BrokerServiceAPIView(RetrieveUpdateAPIView):
+    """
+    Get, Update, Delete Category
+    """
+
+    queryset = BrokerService.objects.all()
+    serializer_class = BrokerServiceSerializer
+    permission_classes = (IsSupervisorOrReadOnly, IsBusinessAdminOrReadOnly, )
+
+    def get_object(self):
+        pk = self.kwargs["pk"]
+        return get_object_or_404(BrokerService, id=pk)
 
 
 class CategoryBrokerListAPIView(ListAPIView):
