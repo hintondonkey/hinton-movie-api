@@ -3,16 +3,8 @@ from django.conf import settings
 from django.db import models
 
 from lookup.models import Category, BaseCreateModel
+from services.models import SubCategory
 from user_app.models import User, Broker
-
-
-class SubCategory(BaseCreateModel):
-    name = models.CharField(max_length=250)
-    description = models.TextField(null=False, blank=False)
-    image = models.CharField(max_length=250, null=True, blank=False)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='parent_subcategory')
-    created_user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='user_create_subcategory')
-    broker = models.ForeignKey(Broker, on_delete=models.CASCADE, null=True, related_name='broker_subcategory')
 
     
 class Event(BaseCreateModel):
@@ -31,6 +23,7 @@ class Event(BaseCreateModel):
     notification_summary = models.TextField(null=True, blank=True)
     approval = models.CharField(max_length=250)
     status = models.BooleanField(default=True)
+    is_horizontal = models.BooleanField(default=True)
     category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, related_name='event_category')
     created_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='user_create_event')
     broker = models.ForeignKey(Broker, on_delete=models.CASCADE, null=True, related_name='broker_event')

@@ -3,6 +3,7 @@ from rest_framework import serializers
 from user_app.models import User
 from django.contrib.auth import authenticate
 from hintonmovie.globals import AccountTypeEnum
+from lookup.api.serializers import CategorySerializer
 
 
 class RegistrationSerializer (serializers.ModelSerializer):
