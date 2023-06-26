@@ -36,7 +36,7 @@ USER dokku
 # COPY ./entrypoint.sh /
 # ENTRYPOINT ["sh", "/entrypoint.sh"]
 
-EXPOSE 8000
+EXPOSE 8081
 # Run application
 # CMD gunicorn phongthuy_thanhnhan.wsgi:application --bind 0.0.0.0:8000
 CMD [ "gunicorn", "code:code" ]

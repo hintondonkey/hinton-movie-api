@@ -1,1 +1,15 @@
 # .env
+event/__pycache__/*
+event/api/__pycache__/*
+event/migrations/__pycache__/*
+hintonmovie/__pycache__/*
+lookup/__pycache__/*
+lookup/api/__pycache__/*
+lookup/migrations/__pycache__/*
+movie/api/__pycache__/*
+movie/migrations/__pycache__/*
+services/api/__pycache__/*
+services/migrations/__pycache__/*
+user_app/__pycache__/*
+user_app/api/__pycache__/*
+user_app/migrations/__pycache__/*
