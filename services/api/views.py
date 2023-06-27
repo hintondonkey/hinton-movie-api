@@ -103,7 +103,7 @@ class BrokerServiceListAPIView(ListAPIView):
     """
     An endpoint for the client to get broker service list.
     """
-    permission_classes = (IsMasterAdminOrReadOnly, IsEditorOrReadOnly, )
+    permission_classes = (AllowAny, )
     serializer_class = BrokerServiceSerializer
     model = serializer_class.Meta.model
 
