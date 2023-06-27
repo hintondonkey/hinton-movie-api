@@ -11,7 +11,7 @@ from lookup.api.serializers import CategorySerializer
 from ..api.serializers import SubCategorySerializer, BrokerServiceSerializer
 from ..models import *
 from hintonmovie.globals import AccountTypeEnum
-from hintonmovie.permissions import IsBusinessAdminOrReadOnly, IsSupervisorOrReadOnly, IsMasterAdminOrReadOnly, IsMasterUserOrReadOnly, IsEditorOrReadOnly, IsBusinessEditorOrReadOnly
+from hintonmovie.permissions import IsBusinessAdminOrReadOnly, IsSupervisorOrReadOnly, IsBusinessAdminSupervisorOrReadOnly, IsBusinessUserOrReadOnly, IsMasterAdminOrReadOnly, IsMasterUserOrReadOnly, IsEditorOrReadOnly, IsBusinessEditorOrReadOnly
 
 
 
@@ -56,7 +56,7 @@ class SubCategoryAPIView(ListCreateAPIView):
     An endpoint for the client to create a new syv Category and get sub category list.
     """
 
-    permission_classes = (IsSupervisorOrReadOnly, IsBusinessAdminOrReadOnly, )
+    permission_classes = (IsBusinessAdminSupervisorOrReadOnly, )
     serializer_class = SubCategorySerializer
 
     def get_queryset(self):
@@ -92,7 +92,7 @@ class SubCategoryRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
 
     queryset = SubCategory.objects.all()
     serializer_class = SubCategorySerializer
-    permission_classes = (IsSupervisorOrReadOnly, IsBusinessAdminOrReadOnly, )
+    permission_classes = (IsBusinessAdminSupervisorOrReadOnly, )
 
     def get_object(self):
         pk = self.kwargs["pk"]
@@ -122,6 +122,19 @@ class BrokerServiceListAPIView(ListAPIView):
 
     def get_queryset(self):
         broker_id = self.kwargs["broker_id"]
+        return BrokerService.objects.filter(broker_id=broker_id)
+
+
+class BrokerServiceBAListAPIView(ListAPIView):
+    """
+    An endpoint for the client to get broker service list.
+    """
+    permission_classes = (IsBusinessUserOrReadOnly, )
+    serializer_class = BrokerServiceSerializer
+    model = serializer_class.Meta.model
+
+    def get_queryset(self):
+        broker_id = self.request.user.profile.broker_id
         return BrokerService.objects.filter(broker_id=broker_id)
     
 
