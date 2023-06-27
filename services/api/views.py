@@ -11,7 +11,7 @@ from lookup.api.serializers import CategorySerializer
 from ..api.serializers import SubCategorySerializer, BrokerServiceSerializer
 from ..models import *
 from hintonmovie.globals import AccountTypeEnum
-from hintonmovie.permissions import IsBusinessAdminOrReadOnly, IsSupervisorOrReadOnly, IsMasterAdminOrReadOnly, IsEditorOrReadOnly, IsBusinessEditorOrReadOnly
+from hintonmovie.permissions import IsBusinessAdminOrReadOnly, IsSupervisorOrReadOnly, IsMasterAdminOrReadOnly, IsMasterUserOrReadOnly, IsEditorOrReadOnly, IsBusinessEditorOrReadOnly
 
 
 
@@ -116,10 +116,10 @@ class BrokerServiceAPIView(RetrieveUpdateAPIView):
     """
     Get, Update Broker service
     """
-
     queryset = BrokerService.objects.all()
     serializer_class = BrokerServiceSerializer
-    permission_classes = (IsMasterAdminOrReadOnly, IsEditorOrReadOnly, )
+    permission_classes = (IsMasterUserOrReadOnly, )
+    model = serializer_class.Meta.model
 
     def get_object(self):
         pk = self.kwargs["pk"]

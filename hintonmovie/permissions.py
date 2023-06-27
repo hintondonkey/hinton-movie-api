@@ -53,6 +53,14 @@ class IsEditorOrReadOnly(permissions.BasePermission):
         return bool(request.user and request.user.profile and request.user.profile.account_type and request.user.profile.account_type.name == AccountTypeEnum.EDITOR.value and not request.user.profile.is_super_admin and request.user.profile.broker and request.user.profile.broker.is_network)
     
 
+class IsMasterUserOrReadOnly(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return bool(request.user and request.user.profile and request.user.profile.broker and request.user.profile.broker.is_network)
+    
+
+
 class IsBusinessAdminOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
