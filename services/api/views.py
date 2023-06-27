@@ -99,6 +99,25 @@ class SubCategoryRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
         return get_object_or_404(SubCategory, id=pk)
     
 
+class BrokerServiceListAPIView(ListAPIView):
+    """
+    An endpoint for the client to get sub category list from category.
+    """
+
+    permission_classes = (IsMasterAdminOrReadOnly, IsEditorOrReadOnly, )
+    serializer_class = BrokerServiceSerializer
+
+    def get_queryset(self):
+        broker_id = self.kwargs["broker_id"]
+        return BrokerService.objects.filter(broker_id=broker_id)
+
+    def list(self, request):
+        # Note the use of `get_queryset()` instead of `self.queryset`
+        queryset = self.get_queryset()
+        serializer = BrokerServiceSerializer(queryset, many=True)
+        return Response(serializer.data)
+    
+
 class BrokerServiceAPIView(RetrieveUpdateAPIView):
     """
     Get, Update, Delete Category
@@ -106,7 +125,7 @@ class BrokerServiceAPIView(RetrieveUpdateAPIView):
 
     queryset = BrokerService.objects.all()
     serializer_class = BrokerServiceSerializer
-    permission_classes = (IsSupervisorOrReadOnly, IsBusinessAdminOrReadOnly, )
+    permission_classes = (IsMasterAdminOrReadOnly, IsEditorOrReadOnly, )
 
     def get_object(self):
         pk = self.kwargs["pk"]
