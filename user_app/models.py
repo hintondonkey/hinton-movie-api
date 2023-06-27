@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from hintonmovie.models import BaseCreateModel
 from rest_framework.authtoken.models import Token
+import uuid
 
 
 class User(AbstractUser):
@@ -31,6 +32,7 @@ class BusinessType(BaseCreateModel):
     
 
 class Broker(BaseCreateModel):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, null=True)
     name = models.TextField(default='', blank=True)
     is_network = models.BooleanField(default=False)
     number_of_users = models.IntegerField(default=0)
