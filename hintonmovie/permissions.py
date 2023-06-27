@@ -60,26 +60,39 @@ class IsMasterUserOrReadOnly(permissions.BasePermission):
         return bool(request.user and request.user.profile and request.user.profile.broker and request.user.profile.broker.is_network)
     
 
-
 class IsBusinessAdminOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
         return bool(request.user and request.user.profile and request.user.profile.is_super_admin and request.user.profile.broker and not request.user.profile.broker.is_network)
-        
+
 
 class IsSupervisorOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
         return bool(request.user and request.user.profile and not request.user.profile.is_super_admin and request.user.profile.account_type and request.user.profile.account_type.name == AccountTypeEnum.SUPERVISOR.value and request.user.profile.broker and not request.user.profile.broker.is_network)
-    
+
+
+class IsBusinessAdminSupervisorOrReadOnly(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return bool(request.user and request.user.profile and (request.user.profile.is_super_admin or (request.user.profile.account_type and request.user.profile.account_type.name == AccountTypeEnum.SUPERVISOR.value)) and request.user.profile.broker and not request.user.profile.broker.is_network)
+        
 
 class IsBusinessEditorOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
-        return bool(request.user and request.user.profile and not request.user.profile.is_super_admin and request.user.profile.account_type and request.user.profile.account_type.name == AccountTypeEnum.EDITOR.value and request.user.profile.broker and not request.user.profile.broker.is_network)
+        return bool(request.user and request.user.profile and not request.user.profile.is_super_admin and request.user.profile.account_type and request.user.profile.account_type.name == AccountTypeEnum.BUSINESS_EDITOR.value and request.user.profile.broker and not request.user.profile.broker.is_network)
+        
+
+class IsBusinessUserOrReadOnly(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return bool(request.user and request.user.profile and request.user.profile.account_type and request.user.profile.account_type.name in [AccountTypeEnum.BUSINESS_ADMIN.value, AccountTypeEnum.SUPERVISOR.value, AccountTypeEnum.BUSINESS_EDITOR.value] and request.user.profile.broker and not request.user.profile.broker.is_network)
         
 
 class IsAdminInSystemOrReadOnly(permissions.BasePermission):
