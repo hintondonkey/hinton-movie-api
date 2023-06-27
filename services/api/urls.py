@@ -11,6 +11,6 @@ urlpatterns = [
     path("broker_service/<int:pk>/", views.BrokerServiceAPIView.as_view(), name="get_update_broker_service"),
     path("get_category_list/<int:broker_id>/", views.CategoryBrokerListAPIView.as_view(), name="list_broker_category"),
     path("get_broker_service/<int:broker_id>/", views.BrokerServiceListAPIView.as_view(), name="get_broker_service_list"),
+    path("get_sub_category_broker_service/<int:broker_id>/", views.SubCategoryBrokerListAPIView.as_view(), name="get_sub_category_broker_service"),
     path("get_broker_service_business_admin/", views.BrokerServiceBAListAPIView.as_view(), name="get_broker_service_business_admin"),
-    
 ]
