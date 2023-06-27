@@ -108,7 +108,7 @@ class BrokerServiceListAPIView(ListAPIView):
     serializer_class = BrokerServiceSerializer
 
     def get_queryset(self):
-        broker_id = self.kwargs["broker_id"]
+        broker_id = self.args["broker_id"]
         return BrokerService.objects.filter(broker_id=broker_id)
 
     def list(self, request):
@@ -128,7 +128,7 @@ class BrokerServiceAPIView(RetrieveUpdateAPIView):
     permission_classes = (IsMasterAdminOrReadOnly, IsEditorOrReadOnly, )
 
     def get_object(self):
-        pk = self.kwargs["pk"]
+        pk = self.args["pk"]
         return get_object_or_404(BrokerService, id=pk)
 
 
