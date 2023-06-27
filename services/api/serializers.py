@@ -11,9 +11,14 @@ class BrokerServiceSerializer(serializers.ModelSerializer):
     broker = BrokerSerializer(many=False, read_only=True)
     category = CategorySerializer(many=False, read_only=True)
     
+    
     class Meta:
         model = BrokerService
         fields = "__all__"
+        extra_kwargs = {
+            'name' : {'read_only': True},
+            'price' : {'read_only': True}
+        }
 
 
 class SubCategorySerializer(serializers.ModelSerializer):

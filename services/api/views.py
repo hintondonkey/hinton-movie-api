@@ -101,26 +101,20 @@ class SubCategoryRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
 
 class BrokerServiceListAPIView(ListAPIView):
     """
-    An endpoint for the client to get sub category list from category.
+    An endpoint for the client to get broker service list.
     """
-
     permission_classes = (IsMasterAdminOrReadOnly, IsEditorOrReadOnly, )
     serializer_class = BrokerServiceSerializer
+    model = serializer_class.Meta.model
 
     def get_queryset(self):
-        broker_id = self.args["broker_id"]
+        broker_id = self.kwargs["broker_id"]
         return BrokerService.objects.filter(broker_id=broker_id)
-
-    def list(self, request):
-        # Note the use of `get_queryset()` instead of `self.queryset`
-        queryset = self.get_queryset()
-        serializer = BrokerServiceSerializer(queryset, many=True)
-        return Response(serializer.data)
     
 
 class BrokerServiceAPIView(RetrieveUpdateAPIView):
     """
-    Get, Update, Delete Category
+    Get, Update Broker service
     """
 
     queryset = BrokerService.objects.all()
@@ -128,7 +122,7 @@ class BrokerServiceAPIView(RetrieveUpdateAPIView):
     permission_classes = (IsMasterAdminOrReadOnly, IsEditorOrReadOnly, )
 
     def get_object(self):
-        pk = self.args["pk"]
+        pk = self.kwargs["pk"]
         return get_object_or_404(BrokerService, id=pk)
 
 
@@ -140,12 +134,7 @@ class CategoryBrokerListAPIView(ListAPIView):
     serializer_class = CategorySerializer
 
     def get_queryset(self):
-        category_id_list = BrokerService.objects.filter(broker_id=self.args['broker_id'], is_active=True).values_list('category_id')
+        category_id_list = BrokerService.objects.filter(broker_id=self.kwargs['broker_id'], is_active=True).values_list('category_id')
         return Category.objects.filter(id__in=category_id_list)
 
-    def list(self, request):
-        # Note the use of `get_queryset()` instead of `self.queryset`
-        queryset = self.get_queryset()
-        serializer = CategorySerializer(queryset, many=True)
-        return Response(serializer.data)
     
