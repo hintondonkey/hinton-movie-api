@@ -112,6 +112,19 @@ class BrokerServiceListAPIView(ListAPIView):
         return BrokerService.objects.filter(broker_id=broker_id)
     
 
+class BrokerServiceListAPIView(ListAPIView):
+    """
+    An endpoint for the client to get broker service list.
+    """
+    permission_classes = (IsMasterUserOrReadOnly, )
+    serializer_class = BrokerServiceSerializer
+    model = serializer_class.Meta.model
+
+    def get_queryset(self):
+        broker_id = self.kwargs["broker_id"]
+        return BrokerService.objects.filter(broker_id=broker_id)
+    
+
 class BrokerServiceAPIView(RetrieveUpdateAPIView):
     """
     Get, Update Broker service
