@@ -14,7 +14,7 @@ from django.core.exceptions import ValidationError
 from ..api.serializers import CategorySerializer
 from ..models import *
 from hintonmovie.globals import AccountTypeEnum
-from hintonmovie.permissions import IsMasterAdminOrReadOnly
+from hintonmovie.permissions import IsMasterAdminOrReadOnly, IsMasterUserOrReadOnly
 
 
 
@@ -41,7 +41,7 @@ class CategoryListCreateAPIView(ListCreateAPIView):
     An endpoint for the client to create a new Category.
     """
 
-    permission_classes = (IsMasterAdminOrReadOnly, )
+    permission_classes = (IsMasterUserOrReadOnly, )
     serializer_class = CategorySerializer
 
     def get_queryset(self):
@@ -68,7 +68,7 @@ class CategoryRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
 
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (IsMasterAdminOrReadOnly,)
+    permission_classes = (IsMasterUserOrReadOnly, )
 
     def get_object(self):
         pk = self.kwargs["pk"]

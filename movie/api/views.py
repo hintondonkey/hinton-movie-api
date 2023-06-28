@@ -22,6 +22,7 @@ class GetAllStreamPlatformAV(APIView):
             platform, many=True, context={'request': request})
         return Response(serializer.data)
         
+
 class GetStreamPlatformDetailAV(APIView):
     def get(self, request, pk):
         try:
@@ -32,6 +33,7 @@ class GetStreamPlatformDetailAV(APIView):
         serializer = StreamPlatformSerializer(
             platform, context={'request': request})
         return Response(serializer.data)
+    
 
 class StreamPlatformAV(APIView):
     permission_classes = [IsAdminUser]

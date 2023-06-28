@@ -18,6 +18,10 @@ class StreamPlatform(models.Model):
     time_show_date = models.TimeField(null=True, blank=True)
     close_date = models.DateField(null=True, blank=False)
     time_close_date = models.TimeField(null=True, blank=True)
+    post_date = models.DateField(null=True, blank=False)
+    post_time = models.TimeField(null=True, blank=True)
+    close_post_date = models.DateField(null=True, blank=False)
+    close_post_time = models.TimeField(null=True, blank=True)
     active = models.BooleanField(default=True)
     create_date = models.DateField(auto_now_add=True)
     titleNoti = models.CharField(max_length=250, null=True, blank=True)
@@ -45,6 +49,16 @@ class WatchList(models.Model):
 
     def str (self):
         return self.platform.title
+    
+
+class MultipleImage(models.Model):
+    uid = models.CharField(max_length=250)
+    name = models.CharField(max_length=250, null=True, blank=False)
+    file_name = models.CharField(max_length=250, null=True, blank=False)
+    file_size = models.CharField(max_length=250, null=True, blank=False)
+    description = models.TextField(null=False, blank=False)
+    event = models.ForeignKey(StreamPlatform, on_delete=models.CASCADE, related_name='stream_platform_image')
+
 
 
 
