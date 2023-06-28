@@ -60,7 +60,7 @@ class UserRegisterationAPIView(GenericAPIView):
         token = RefreshToken.for_user(user)
         data = serializer.data
         data["tokens"] = {"refresh": str(token), "access": str(token.access_token)}
-        data["roles"] = {"current_user_id": user.id, "account_type": user.profile.account_type.name if user.profile and user.profile.account_type else None, "is_super_admin": user.profile.is_super_admin if user.profile else False}
+        data["roles"] = {"current_user_id": user.id, "broker_id": user.profile.broker_id, "account_type": user.profile.account_type.name if user.profile and user.profile.account_type else None, "is_super_admin": user.profile.is_super_admin if user.profile else False}
         return Response(data, status=status.HTTP_201_CREATED)
     
 
@@ -125,7 +125,7 @@ class UserLoginAPIView(GenericAPIView):
         token = RefreshToken.for_user(user)
         data = serializer.data
         data["tokens"] = {"refresh": str(token), "access": str(token.access_token)}
-        data["roles"] = {"current_user_id": user.id, "account_type": user.profile.account_type.name if user.profile and user.profile.account_type else None, "is_super_admin": user.profile.is_super_admin if user.profile else False}
+        data["roles"] = {"current_user_id": user.id, "broker_id": user.profile.broker_id, "account_type": user.profile.account_type.name if user.profile and user.profile.account_type else None, "is_super_admin": user.profile.is_super_admin if user.profile else False}
         return Response(data, status=status.HTTP_200_OK)
     
 
