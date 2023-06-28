@@ -160,7 +160,7 @@ class CategoryBrokerListAPIView(ListAPIView):
     serializer_class = CategorySerializer
 
     def get_queryset(self):
-        category_id_list = BrokerService.objects.filter(broker_id=self.kwargs['broker_id'], is_active=True).values_list('category_id')
+        category_id_list = BrokerService.objects.filter(broker_id=self.kwargs['broker_id'], is_active=True).values_list('category_id', flat=True)
         return Category.objects.filter(id__in=category_id_list)
 
 
@@ -172,6 +172,20 @@ class SubCategoryBrokerListAPIView(ListAPIView):
     serializer_class = SubCategorySerializer
 
     def get_queryset(self):
-        category_id_list = BrokerService.objects.filter(broker_id=self.kwargs['broker_id'], is_active=True).values_list('category_id')
-        return SubCategory.objects.filter(category_id=category_id_list).distinct('id')
+        category_id_list = BrokerService.objects.filter(broker_id=self.kwargs['broker_id'], is_active=True).values_list('category_id', flat=True)
+        return SubCategory.objects.filter(category_id__in=category_id_list).distinct('id')
+    
+
+class SubCategoryCategoryBrokerListAPIView(ListAPIView):
+    """
+    An endpoint for the client to get sub category list of broker.
+    """
+    permission_classes = (AllowAny, )
+    serializer_class = SubCategorySerializer
+
+    def get_queryset(self):
+        print(self.kwargs)
+        category_id_list = BrokerService.objects.filter(broker_id=self.kwargs['broker_id'], is_active=True).values_list('category_id', flat=True)
+        return SubCategory.objects.filter(category_id__in=category_id_list, broker_id=self.kwargs['broker_id']).distinct('id')
+    
      
