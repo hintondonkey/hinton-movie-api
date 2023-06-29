@@ -26,7 +26,7 @@ class SubCategorySerializer(serializers.ModelSerializer):
     Serializer class to serialize SubCategory model for event
     """
     broker = BrokerSerializer(many=False, read_only=True)
-    total_event = serializers.SerializerMethodField(source='get_total_event')
+    total_event = serializers.SerializerMethodField(source='get_total_event',  required=False, allow_null=True)
     created_user = UserSerializer(many=False, read_only=True)
     category_name = serializers.CharField(source='category.name', required=False, allow_null=True, allow_blank=True)
 
