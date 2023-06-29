@@ -15,3 +15,4 @@ user_app/api/__pycache__/*
 user_app/migrations/__pycache__/*
 movie/__pycache__/*
 services/__pycache__/*
+.vscode/
