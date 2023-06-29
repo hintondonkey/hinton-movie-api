@@ -126,9 +126,7 @@ class StreamPlatformCreateAPIView(CreateAPIView):
                 }
             send_notification("demo", stream_platform_id, serializer.data['titleNoti'], serializer.data['summaryNoti'])
         
-        serializer.is_valid(raise_exception=True)
-        serializer_data = serializer.save(broker_id=broker_id, created_user_id=created_user_id)
-        return Response(StreamPlatformSerializer(serializer_data).data, status=status.HTTP_201_CREATED)
+        return Response(StreamPlatformSerializer(serializer).data, status=status.HTTP_201_CREATED)
     
     
 class StreamPlatformRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
