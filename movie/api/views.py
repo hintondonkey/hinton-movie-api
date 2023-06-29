@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework import status
 from movie.api.serializers import WatchListSerializer, StreamPlatformSerializer
 from movie.models import WatchList, StreamPlatform
+from services.models import BrokerService
 from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS, IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView, ListCreateAPIView, ListAPIView, UpdateAPIView
@@ -22,6 +23,18 @@ class GetAllStreamPlatformAV(APIView):
             platform, many=True, context={'request': request})
         return Response(serializer.data)
         
+
+class StreamPlatformListAPIView(ListAPIView):
+    """
+    An endpoint for the client to get StreamPlatform list of broker.
+    """
+    permission_classes = (AllowAny, )
+    serializer_class = StreamPlatformSerializer
+
+    def get_queryset(self):
+        category_id_list = BrokerService.objects.filter(broker_id=self.kwargs['broker_id'], category_id=self.kwargs['category_id'], is_active=True).values_list('category_id', flat=True)
+        return StreamPlatform.objects.filter(active=True, category_id=self.kwargs['category_id'], broker_id=self.kwargs['broker_id']).order_by('create_date')
+    
 
 class GetStreamPlatformDetailAV(APIView):
     def get(self, request, pk):
