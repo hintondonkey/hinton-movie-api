@@ -32,7 +32,7 @@ class StreamPlatform(models.Model):
     status = models.BooleanField(default=True)
     is_horizontal = models.BooleanField(default=True)
     category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, null=True, related_name='stream_platform_caterogy')
-    subcategory = models.ManyToManyField(SubCategory, null=True, related_name='stream_platform_subcaterogy')
+    subcategory = models.ForeignKey(SubCategory, on_delete=models.CASCADE, null=True, related_name='stream_platform_subcaterogy')
     broker = models.ForeignKey(Broker, on_delete=models.CASCADE, null=True, related_name='stream_platform_broker')
     created_user = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, related_name='stream_platform_user')
 
@@ -59,7 +59,7 @@ class MultipleImage(models.Model):
     file_name = models.CharField(max_length=250, null=True, blank=False)
     file_size = models.CharField(max_length=250, null=True, blank=False)
     description = models.TextField(null=False, blank=False)
-    event = models.ForeignKey(StreamPlatform, on_delete=models.CASCADE, related_name='stream_platform_image')
+    stream_platform = models.ForeignKey(StreamPlatform, on_delete=models.CASCADE, related_name='stream_platform_image')
 
 
 
