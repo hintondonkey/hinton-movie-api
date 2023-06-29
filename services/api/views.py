@@ -184,7 +184,6 @@ class SubCategoryCategoryBrokerListAPIView(ListAPIView):
     serializer_class = SubCategorySerializer
 
     def get_queryset(self):
-        print(self.kwargs)
         category_id_list = BrokerService.objects.filter(broker_id=self.kwargs['broker_id'], is_active=True).values_list('category_id', flat=True)
         return SubCategory.objects.filter(category_id__in=category_id_list, broker_id=self.kwargs['broker_id']).distinct('id')
     
