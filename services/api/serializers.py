@@ -47,16 +47,15 @@ class SubCategorySerializer(serializers.ModelSerializer):
     def save(self, **data):
         broker_id = data.get('broker_id', None)
         created_user_id = data.get('created_user_id', None)
-        
-        if not broker_id or not created_user_id:
-            raise serializers.ValidationError({'error': 'Missing required fields!'})
 
         if SubCategory.objects.filter(name=self.validated_data['name']).exists():
             raise serializers.ValidationError({'error': 'Subcategory already exists!'})
 
         subcategory = SubCategory(**self.validated_data)
-        subcategory.broker_id = broker_id
-        subcategory.created_user_id = created_user_id
+        if broker_id:
+            subcategory.broker_id = broker_id
+        if created_user_id:
+            subcategory.created_user_id = created_user_id
         subcategory.save()
         return subcategory
     
