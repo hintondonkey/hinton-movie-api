@@ -44,22 +44,7 @@ class SubCategorySerializer(serializers.ModelSerializer):
     def get_parent_category_name(self, caterory):
         return caterory.name if caterory else ''
     
-    # def save(self, **data):
-    #     broker_id = data.get('broker_id', None)
-    #     created_user_id = data.get('created_user_id', None)
-
-    #     if SubCategory.objects.filter(name=self.validated_data['name']).exclude(id=self.context.get("kwargs").get('id', None) if self.context.get("kwargs") else None).exists():
-    #         raise serializers.ValidationError({'error': 'Subcategory already exists!'})
-
-    #     subcategory = SubCategory(**self.validated_data)
-    #     if broker_id:
-    #         subcategory.broker_id = broker_id
-    #     if created_user_id:
-    #         subcategory.created_user_id = created_user_id
-    #     subcategory.save()
-    #     return subcategory
-    
-    def create(self, validated_data, **data):
+    def save(self, **data):
         broker_id = data.get('broker_id', None)
         created_user_id = data.get('created_user_id', None)
 

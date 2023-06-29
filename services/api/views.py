@@ -81,7 +81,7 @@ class SubCategoryAPIView(ListCreateAPIView):
             print(e)
         
         serializer.is_valid(raise_exception=True)
-        serializer_data = serializer.create(request.data, broker_id=broker_id, created_user_id=created_user_id)
+        serializer_data = serializer.save(broker_id=broker_id, created_user_id=created_user_id)
         return Response(SubCategorySerializer(serializer_data).data, status=status.HTTP_201_CREATED)
     
 
@@ -97,6 +97,16 @@ class SubCategoryRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         pk = self.kwargs["pk"]
         return get_object_or_404(SubCategory, id=pk)
+    
+    def patch(self, request, pk):
+        obj = self.get_object()
+        serializer = self.get_serializer(instance=obj, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.update(obj, request.data)
+            data = serializer.data
+            return Response(data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
     
 
 class BrokerServiceListAPIView(ListAPIView):
