@@ -34,6 +34,7 @@ class StreamPlatform(models.Model):
     category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, null=True, related_name='stream_platform_caterogy')
     subcategory = models.ManyToManyField(SubCategory, null=True, related_name='stream_platform_subcaterogy')
     broker = models.ForeignKey(Broker, on_delete=models.CASCADE, null=True, related_name='stream_platform_broker')
+    created_user = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, related_name='stream_platform_user')
 
     def str (self):
         return self.title

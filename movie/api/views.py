@@ -2,12 +2,12 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, APIView
 from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework import status
-from movie.api.serializers import WatchListSerializer, StreamPlatformSerializer
+from movie.api.serializers import WatchListSerializer, StreamPlatformSerializer, MultipleImageSerializer
 from movie.models import WatchList, StreamPlatform
 from services.models import BrokerService
 from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS, IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView, ListCreateAPIView, ListAPIView, UpdateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView, CreateAPIView, ListCreateAPIView, ListAPIView, UpdateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView
 import firebase_admin
 from firebase_admin import credentials, messaging
 import os
@@ -18,6 +18,20 @@ from hintonmovie.permissions import *
 
 creds = credentials.Certificate("movie/api/cert.json")
 firebase_admin.initialize_app(creds)
+
+
+def send_notification(topic, data, title, content):
+    try:
+        if title and content:
+            message = messaging.Message(
+                notification= messaging.Notification(title=title, 
+                                                        body=content),
+                topic="demo",
+                data=data
+            )
+            messaging.send(message)
+    except Exception as e:
+        print("Error while send notification as message: ", e)
 
 
 class GetAllStreamPlatformAV(APIView):
@@ -66,6 +80,56 @@ class StreamPlatformAPIView(RetrieveAPIView):
         broker_id = self.kwargs["broker_id"]
         return get_object_or_404(StreamPlatform, id=pk, broker_id=broker_id)
     
+
+class StreamPlatformCreateAPIView(CreateAPIView):
+    """
+    create stream platform
+    """
+
+    queryset = StreamPlatform.objects.all()
+    serializer_class = StreamPlatformSerializer
+    permission_classes = (IsBusinessAdminSupervisorOrReadOnly, )
+
+    def post(self, request, *args, **kwargs):
+        broker_id = request.user.profile.broker_id
+        created_user_id = request.user.id
+        
+        serializer = self.get_serializer(data=request.data)
+
+        watchlist = request.data.get('watchlist')
+        stream_flatform_image = request.data.get('stream_flatform_image')
+
+        if serializer.is_valid():
+            serializer.save(broker_id=broker_id, created_user_id=created_user_id)
+            stream_platform_id = serializer.data.get('id')
+            if stream_platform_id and watchlist:
+                for watch in watchlist:
+                    watch['platform'] = stream_platform_id
+                    watchlist_serializer = WatchListSerializer(data=watch)
+                    if watchlist_serializer.is_valid():
+                        watchlist_serializer.save()
+                        serializer.data['watchlist'].append(watchlist_serializer.data)
+                    else:
+                        return Response(watchlist_serializer.errors)
+            if stream_platform_id and stream_flatform_image:
+                for image in stream_flatform_image:
+                    image['stream_platform'] = stream_platform_id
+                    multiple_image_serializer = MultipleImageSerializer(data=image)
+                    if multiple_image_serializer.is_valid():
+                        multiple_image_serializer.save()
+                        serializer.data['stream_flatform_image'].append(multiple_image_serializer.data)
+                    else:
+                        return Response(multiple_image_serializer.errors)
+            
+            stream_platform_id = {
+                    "id": str(serializer.data['id'])
+                }
+            send_notification("demo", stream_platform_id, serializer.data['titleNoti'], serializer.data['summaryNoti'])
+        
+        serializer.is_valid(raise_exception=True)
+        serializer_data = serializer.save(broker_id=broker_id, created_user_id=created_user_id)
+        return Response(StreamPlatformSerializer(serializer_data).data, status=status.HTTP_201_CREATED)
+    
     
 class StreamPlatformRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     """
@@ -80,12 +144,19 @@ class StreamPlatformRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
         pk = self.kwargs["pk"]
         return get_object_or_404(StreamPlatform, id=pk)
     
-    def patch(self, request, pk):
+    def put(self, request, pk):
         obj = self.get_object()
         serializer = self.get_serializer(instance=obj, data=request.data, partial=True)
+        is_checked = request.data['ischecked']
         
         if serializer.is_valid():
             serializer.update()
+            if is_checked:
+                stream_platform_id = {
+                    "id": str(serializer.data['id'])
+                }
+                
+                send_notification("demo", stream_platform_id, serializer.data['titleNoti'], serializer.data['summaryNoti'])
             data = serializer.data
             return Response(data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
