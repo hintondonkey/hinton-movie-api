@@ -81,7 +81,7 @@ class SubCategoryAPIView(ListCreateAPIView):
             print(e)
         
         serializer.is_valid(raise_exception=True)
-        serializer_data = serializer.save(broker_id=broker_id, created_user_id=created_user_id)
+        serializer_data = serializer.create(request.data, broker_id=broker_id, created_user_id=created_user_id)
         return Response(SubCategorySerializer(serializer_data).data, status=status.HTTP_201_CREATED)
     
 
