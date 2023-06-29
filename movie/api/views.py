@@ -7,11 +7,15 @@ from movie.models import WatchList, StreamPlatform
 from services.models import BrokerService
 from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS, IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView, ListCreateAPIView, ListAPIView, UpdateAPIView
+from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView, ListCreateAPIView, ListAPIView, UpdateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView
 import firebase_admin
 from firebase_admin import credentials, messaging
 import os
 import json
+from django.shortcuts import get_object_or_404
+
+from hintonmovie.permissions import *
+
 creds = credentials.Certificate("movie/api/cert.json")
 firebase_admin.initialize_app(creds)
 
@@ -24,7 +28,7 @@ class GetAllStreamPlatformAV(APIView):
         return Response(serializer.data)
         
 
-class StreamPlatformListAPIView(ListAPIView):
+class StreamPlatformCategoryBrokerListAPIView(ListAPIView):
     """
     An endpoint for the client to get StreamPlatform list of broker.
     """
@@ -33,9 +37,60 @@ class StreamPlatformListAPIView(ListAPIView):
 
     def get_queryset(self):
         category_id_list = BrokerService.objects.filter(broker_id=self.kwargs['broker_id'], category_id=self.kwargs['category_id'], is_active=True).values_list('category_id', flat=True)
-        return StreamPlatform.objects.filter(active=True, category_id=self.kwargs['category_id'], broker_id=self.kwargs['broker_id']).order_by('create_date')
+        return StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=self.kwargs['broker_id']).order_by('create_date')
     
 
+class StreamPlatformBrokerListAPIView(ListAPIView):
+    """
+    An endpoint for the client to get StreamPlatform list of broker.
+    """
+    permission_classes = (AllowAny, )
+    serializer_class = StreamPlatformSerializer
+
+    def get_queryset(self):
+        category_id_list = BrokerService.objects.filter(broker_id=self.kwargs['broker_id'], is_active=True).values_list('category_id', flat=True)
+        return StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=self.kwargs['broker_id']).order_by('create_date')
+    
+
+class StreamPlatformAPIView(RetrieveAPIView):
+    """
+    Get stream platform broker detail
+    """
+
+    queryset = StreamPlatform.objects.all()
+    serializer_class = StreamPlatformSerializer
+    permission_classes = (AllowAny, )
+
+    def get_object(self):
+        pk = self.kwargs["pk"]
+        broker_id = self.kwargs["broker_id"]
+        return get_object_or_404(StreamPlatform, id=pk, broker_id=broker_id)
+    
+    
+class StreamPlatformRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+    """
+    Get, Update, Delete Stream Platform
+    """
+
+    queryset = StreamPlatform.objects.all()
+    serializer_class = StreamPlatformSerializer
+    permission_classes = (IsBusinessAdminSupervisorOrReadOnly, )
+
+    def get_object(self):
+        pk = self.kwargs["pk"]
+        return get_object_or_404(StreamPlatform, id=pk)
+    
+    def patch(self, request, pk):
+        obj = self.get_object()
+        serializer = self.get_serializer(instance=obj, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.update()
+            data = serializer.data
+            return Response(data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    
 class GetStreamPlatformDetailAV(APIView):
     def get(self, request, pk):
         try:
