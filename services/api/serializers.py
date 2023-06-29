@@ -60,8 +60,8 @@ class SubCategorySerializer(serializers.ModelSerializer):
         return subcategory
     
     ## Optional: in case you don't want `id` of the instance getting updated
-    def update(self, instance, validated_data):
-        return super().update(self, instance, validated_data)
+    def update(self):
+        return super(SubCategorySerializer, self).update(self.instance, self.validated_data)
     
 
 

@@ -103,7 +103,7 @@ class SubCategoryRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
         serializer = self.get_serializer(instance=obj, data=request.data, partial=True)
         
         if serializer.is_valid():
-            serializer.update(obj, request.data)
+            serializer.update()
             data = serializer.data
             return Response(data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
