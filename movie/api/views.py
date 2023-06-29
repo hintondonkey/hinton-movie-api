@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view, APIView
 from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework import status
 from movie.api.serializers import WatchListSerializer, StreamPlatformSerializer, MultipleImageSerializer
-from movie.models import WatchList, StreamPlatform
+from movie.models import WatchList, StreamPlatform, MultipleImage
 from services.models import BrokerService
 from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS, IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -148,15 +148,28 @@ class StreamPlatformRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
         obj = self.get_object()
         serializer = self.get_serializer(instance=obj, data=request.data, partial=True)
         is_checked = request.data['ischecked']
-        
+        stream_flatform_image = request.data.get('stream_flatform_image')
         if serializer.is_valid():
             serializer.update()
+            
             if is_checked:
                 stream_platform_id = {
                     "id": str(serializer.data['id'])
                 }
-                
                 send_notification("demo", stream_platform_id, serializer.data['titleNoti'], serializer.data['summaryNoti'])
+
+            stream_platform_id = serializer.data.get('id')
+            MultipleImage.objects.filter(stream_platform_id=int(stream_platform_id)).delete()
+            if stream_flatform_image:
+                for image in stream_flatform_image:
+                    image['stream_platform'] = stream_platform_id
+                    multiple_image_serializer = MultipleImageSerializer(data=image)
+                    if multiple_image_serializer.is_valid():
+                        multiple_image_serializer.save()
+                        serializer.data['stream_flatform_image'].append(multiple_image_serializer.data)
+                    else:
+                        return Response(multiple_image_serializer.errors)
+                    
             data = serializer.data
             return Response(data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)

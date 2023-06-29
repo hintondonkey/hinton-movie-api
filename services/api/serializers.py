@@ -48,7 +48,7 @@ class SubCategorySerializer(serializers.ModelSerializer):
         broker_id = data.get('broker_id', None)
         created_user_id = data.get('created_user_id', None)
 
-        if SubCategory.objects.filter(name=self.validated_data['name']).exclude(id=self.context.get("kwargs").get('id', None) if self.context.get("kwargs") else None).exists():
+        if SubCategory.objects.filter(name=self.validated_data['name']).exists():
             raise serializers.ValidationError({'error': 'Subcategory already exists!'})
 
         subcategory = SubCategory(**self.validated_data)
