@@ -42,13 +42,13 @@ class SubCategoryListCategoryAPIView(ListAPIView):
     serializer_class = SubCategorySerializer
 
     def get_queryset(self):
-        return SubCategory.objects.filter(category_id=self.args['category_id'])
+        return SubCategory.objects.filter(category_id=self.kwargs['category_id'])
 
-    def list(self, request):
-        # Note the use of `get_queryset()` instead of `self.queryset`
-        queryset = self.get_queryset()
-        serializer = SubCategorySerializer(queryset, many=True)
-        return Response(serializer.data)
+    # def list(self, request):
+    #     # Note the use of `get_queryset()` instead of `self.queryset`
+    #     queryset = self.get_queryset()
+    #     serializer = SubCategorySerializer(queryset, many=True)
+    #     return Response(serializer.data)
     
     
 class SubCategoryAPIView(ListCreateAPIView):
