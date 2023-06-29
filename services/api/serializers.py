@@ -28,12 +28,12 @@ class SubCategorySerializer(serializers.ModelSerializer):
     broker = BrokerSerializer(many=False, read_only=True)
     total_event = serializers.SerializerMethodField(source='get_total_event')
     created_user = UserSerializer(many=False, read_only=True)
-    parent_category = serializers.SerializerMethodField(source='get_parent_category_name')
+    parent_category = CategorySerializer(many=False, read_only=True)
 
     class Meta:
         model = SubCategory
         fields = "__all__"
-        extra_fields = ['total_event', 'get_parent_category_name']
+        extra_fields = ['total_event', 'parent_category']
     
     def get_total_event(self, caterory):
         num = 0
