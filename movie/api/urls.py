@@ -5,6 +5,7 @@ from movie.api.views import *
 urlpatterns = [
     path('liststream/', GetAllStreamPlatformAV.as_view(), name='list-streamplatform'),
     path('liststream/<int:broker_id>/<int:category_id>/', StreamPlatformCategoryBrokerListAPIView.as_view(), name='list_stream_platform_category_broker'),
+    path('liststream/<int:broker_id>/<int:category_id>/<int:subcategory_id>/', StreamPlatformCategoryBrokerSubCategoryListAPIView.as_view(), name='list_stream_platform_category_broker_subcategory'),
     path('liststream/<int:broker_id>/', StreamPlatformBrokerListAPIView.as_view(), name='list_stream_platform_broker'), 
     path('<int:pk>', GetStreamPlatformDetailAV.as_view(), name='streamplatform-detail'),
     path('<int:broker_id>/<int:pk>/', StreamPlatformAPIView.as_view(), name='get_stream_platform_broker_detail'),

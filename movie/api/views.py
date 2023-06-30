@@ -53,6 +53,18 @@ class StreamPlatformCategoryBrokerListAPIView(ListAPIView):
         category_id_list = BrokerService.objects.filter(broker_id=self.kwargs['broker_id'], category_id=self.kwargs['category_id'], is_active=True).values_list('category_id', flat=True)
         return StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=self.kwargs['broker_id']).order_by('create_date')
     
+    
+class StreamPlatformCategoryBrokerSubCategoryListAPIView(ListAPIView):
+    """
+    An endpoint for the client to get StreamPlatform list of broker.
+    """
+    permission_classes = (AllowAny, )
+    serializer_class = StreamPlatformSerializer
+
+    def get_queryset(self):
+        category_id_list = BrokerService.objects.filter(broker_id=self.kwargs['broker_id'], category_id=self.kwargs['category_id'], is_active=True).values_list('category_id', flat=True)
+        return StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=self.kwargs['broker_id'], subcategory_id=self.kwargs['subcategory_id']).order_by('create_date')
+    
 
 class StreamPlatformBrokerListAPIView(ListAPIView):
     """
