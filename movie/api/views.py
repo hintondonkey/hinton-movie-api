@@ -50,10 +50,15 @@ class StreamPlatformCategoryBrokerListAPIView(ListAPIView):
     serializer_class = StreamPlatformSerializer
 
     def get_queryset(self):
-        category_id_list = BrokerService.objects.filter(broker_id=self.kwargs['broker_id'], category_id=self.kwargs['category_id'], is_active=True).values_list('category_id', flat=True)
-        return StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=self.kwargs['broker_id']).order_by('create_date')
+        query = None
+        broker_id = self.kwargs.get('broker_id', None)
+        category_id = self.kwargs.get('category_id', None)
+        if broker_id and category_id:
+            category_id_list = BrokerService.objects.filter(broker_id=broker_id, category_id=category_id, is_active=True).values_list('category_id', flat=True)
+            query = StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=broker_id).order_by('create_date')
+        return query
     
-    
+
 class StreamPlatformCategoryBrokerSubCategoryListAPIView(ListAPIView):
     """
     An endpoint for the client to get StreamPlatform list of broker.
@@ -62,8 +67,17 @@ class StreamPlatformCategoryBrokerSubCategoryListAPIView(ListAPIView):
     serializer_class = StreamPlatformSerializer
 
     def get_queryset(self):
-        category_id_list = BrokerService.objects.filter(broker_id=self.kwargs['broker_id'], category_id=self.kwargs['category_id'], is_active=True).values_list('category_id', flat=True)
-        return StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=self.kwargs['broker_id'], subcategory_id=self.kwargs['subcategory_id']).order_by('create_date')
+        query = None
+        broker_id = self.kwargs.get('broker_id', None)
+        category_id = self.kwargs.get('category_id', None)
+        subcategory_id = self.kwargs.get('subcategory_id', None)
+        if broker_id and category_id:
+            category_id_list = BrokerService.objects.filter(broker_id=broker_id, category_id=category_id, is_active=True).values_list('category_id', flat=True)
+            if subcategory_id:
+                query = StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=broker_id, subcategory_id=subcategory_id).order_by('create_date')
+            else:
+                query = StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=broker_id).order_by('create_date')
+        return query
     
 
 class StreamPlatformBrokerListAPIView(ListAPIView):
