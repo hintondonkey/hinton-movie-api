@@ -132,7 +132,7 @@ class StreamPlatformCreateAPIView(CreateAPIView):
         watchlist = request.data.get('watchlist')
         stream_flatform_image = request.data.get('stream_flatform_image')
         
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             stream_platform = serializer.save(broker_id=broker_id, created_user_id=created_user_id)
             stream_platform_id = stream_platform.id
 
