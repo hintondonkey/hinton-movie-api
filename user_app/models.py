@@ -59,4 +59,5 @@ class Profile(BaseCreateModel):
     city = models.CharField(max_length=100, default='', null=True, blank=True)
     country = models.CharField(max_length=100, default='', null=True, blank=True)
     organization = models.CharField(max_length=100, default='', null=True, blank=True)
+    is_active = models.BooleanField(default=False)
 

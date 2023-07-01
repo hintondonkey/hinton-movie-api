@@ -50,7 +50,6 @@ class StreamPlatformSerializer(serializers.ModelSerializer):
     def save(self, **data):
         broker_id = data.get('broker_id', None)
         created_user_id = data.get('created_user_id', None)
-        print(self.context)
 
         if StreamPlatform.objects.filter(title=self.validated_data['title']).exists():
             raise serializers.ValidationError({'error': 'Stream Platform already exists!'})

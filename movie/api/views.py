@@ -13,11 +13,18 @@ from firebase_admin import credentials, messaging
 import os
 import json
 from django.shortcuts import get_object_or_404
+from datetime import datetime
 
 from hintonmovie.permissions import *
 
 creds = credentials.Certificate("movie/api/cert.json")
 firebase_admin.initialize_app(creds)
+
+
+
+def get_current_date_time():
+    current_date_time = datetime.now()
+    return current_date_time.strftime("%d/%m/%Y"), current_date_time.strftime("%H:%M:%S")
 
 
 def send_notification(topic, data, title, content):
@@ -124,35 +131,32 @@ class StreamPlatformCreateAPIView(CreateAPIView):
 
         watchlist = request.data.get('watchlist')
         stream_flatform_image = request.data.get('stream_flatform_image')
-
+        
         if serializer.is_valid():
-            serializer.save(broker_id=broker_id, created_user_id=created_user_id)
-            stream_platform_id = serializer.data.get('id')
+            stream_platform = serializer.save(broker_id=broker_id, created_user_id=created_user_id)
+            stream_platform_id = stream_platform.id
+
             if stream_platform_id and watchlist:
-                for watch in watchlist:
+                for watch in list(watchlist):
                     watch['platform'] = stream_platform_id
                     watchlist_serializer = WatchListSerializer(data=watch)
                     if watchlist_serializer.is_valid():
                         watchlist_serializer.save()
-                        serializer.data['watchlist'].append(watchlist_serializer.data)
                     else:
                         return Response(watchlist_serializer.errors)
+    
             if stream_platform_id and stream_flatform_image:
-                for image in stream_flatform_image:
+                for image in list(stream_flatform_image):
                     image['stream_platform'] = stream_platform_id
                     multiple_image_serializer = MultipleImageSerializer(data=image)
                     if multiple_image_serializer.is_valid():
                         multiple_image_serializer.save()
-                        serializer.data['stream_flatform_image'].append(multiple_image_serializer.data)
                     else:
                         return Response(multiple_image_serializer.errors)
             
-            stream_platform_id = {
-                    "id": str(serializer.data['id'])
-                }
             send_notification("demo", stream_platform_id, serializer.data['titleNoti'], serializer.data['summaryNoti'])
         
-        return Response(StreamPlatformSerializer(serializer).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     
 class StreamPlatformRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
