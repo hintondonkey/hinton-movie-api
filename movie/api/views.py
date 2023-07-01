@@ -130,8 +130,8 @@ class StreamPlatformCreateAPIView(CreateAPIView):
         serializer = self.get_serializer(data=request.data)
 
         watchlist = request.data.get('watchlist')
-        stream_flatform_image = request.data.get('stream_flatform_image')
-        
+        stream_platform_image = request.data.get('stream_platform_image')
+        stream_platform_id = None
         if serializer.is_valid(raise_exception=True):
             stream_platform = serializer.save(broker_id=broker_id, created_user_id=created_user_id)
             stream_platform_id = stream_platform.id
@@ -145,8 +145,8 @@ class StreamPlatformCreateAPIView(CreateAPIView):
                     else:
                         return Response(watchlist_serializer.errors)
     
-            if stream_platform_id and stream_flatform_image:
-                for image in list(stream_flatform_image):
+            if stream_platform_id and stream_platform_image:
+                for image in list(stream_platform_image):
                     image['stream_platform'] = stream_platform_id
                     multiple_image_serializer = MultipleImageSerializer(data=image)
                     if multiple_image_serializer.is_valid():
@@ -155,8 +155,8 @@ class StreamPlatformCreateAPIView(CreateAPIView):
                         return Response(multiple_image_serializer.errors)
             
             send_notification("demo", stream_platform_id, serializer.data['titleNoti'], serializer.data['summaryNoti'])
-        
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        stream_flatform = StreamPlatform.objects.filter(id=stream_platform_id).first()
+        return Response(StreamPlatformSerializer(stream_flatform).data, status=status.HTTP_201_CREATED)
     
     
 class StreamPlatformRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
@@ -176,7 +176,7 @@ class StreamPlatformRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
         obj = self.get_object()
         serializer = self.get_serializer(instance=obj, data=request.data, partial=True)
         is_checked = request.data['ischecked']
-        stream_flatform_image = request.data.get('stream_flatform_image')
+        stream_platform_image = request.data.get('stream_platform_image')
         if serializer.is_valid():
             serializer.update()
             
@@ -188,13 +188,13 @@ class StreamPlatformRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
 
             stream_platform_id = serializer.data.get('id')
             MultipleImage.objects.filter(stream_platform_id=int(stream_platform_id)).delete()
-            if stream_flatform_image:
-                for image in stream_flatform_image:
+            if stream_platform_image:
+                for image in stream_platform_image:
                     image['stream_platform'] = stream_platform_id
                     multiple_image_serializer = MultipleImageSerializer(data=image)
                     if multiple_image_serializer.is_valid():
                         multiple_image_serializer.save()
-                        serializer.data['stream_flatform_image'].append(multiple_image_serializer.data)
+                        # serializer.data['stream_flatform_image'].append(multiple_image_serializer.data)
                     else:
                         return Response(multiple_image_serializer.errors)
                     

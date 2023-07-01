@@ -23,7 +23,7 @@ class MultipleImageSerializer(serializers.ModelSerializer):
 
 class StreamPlatformSerializer(serializers.ModelSerializer):
     watchlist = WatchListSerializer(many=True, read_only=True)
-    stream_flatform_image = MultipleImageSerializer(many=True, read_only=True)
+    stream_platform_image = MultipleImageSerializer(many=True, read_only=True)
     category_name = serializers.CharField(source='category.name', required=False, allow_null=True, allow_blank=True)
     subcategory_name = serializers.CharField(source='subcategory.name', required=False, allow_null=True, allow_blank=True)
 
