@@ -65,7 +65,7 @@ class StreamPlatformCategoryBrokerListAPIView(ListAPIView):
         user = self.request.user
         if broker_id and category_id:
             category_id_list = BrokerService.objects.filter(broker_id=broker_id, category_id=category_id, is_active=True).values_list('category_id', flat=True)
-            query = StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=broker_id).order_by('create_date')
+            query = StreamPlatform.objects.filter(category_id__in=category_id_list, broker_id=broker_id).order_by('create_date')
             if not user:
                 query = StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=broker_id).filter(Q(post_date__lt=current_date) | (Q(post_date=current_date) & Q(post_time__lte=current_time))).order_by('create_date')
         return query
@@ -88,11 +88,11 @@ class StreamPlatformCategoryBrokerSubCategoryListAPIView(ListAPIView):
         if broker_id and category_id:
             category_id_list = BrokerService.objects.filter(broker_id=broker_id, category_id=category_id, is_active=True).values_list('category_id', flat=True)
             if subcategory_id:
-                query = StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=broker_id, subcategory_id=subcategory_id).order_by('create_date')
+                query = StreamPlatform.objects.filter(category_id__in=category_id_list, broker_id=broker_id, subcategory_id=subcategory_id).order_by('create_date')
             else:
-                query = StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=broker_id).order_by('create_date')
+                query = StreamPlatform.objects.filter(category_id__in=category_id_list, broker_id=broker_id).order_by('create_date')
             if not user and query:
-                query = query.filter(Q(post_date__lt=current_date) | (Q(post_date=current_date) & Q(post_time__lte=current_time))).order_by('create_date')
+                query = query.filter(Q(active=True) & Q(post_date__lt=current_date) | (Q(post_date=current_date) & Q(post_time__lte=current_time))).order_by('create_date')
         return query
     
 
@@ -108,7 +108,7 @@ class StreamPlatformBrokerListAPIView(ListAPIView):
         user = self.request.user
         broker_id = self.kwargs['broker_id']
         category_id_list = BrokerService.objects.filter(broker_id=broker_id, is_active=True).values_list('category_id', flat=True)
-        query = StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=broker_id).order_by('create_date')
+        query = StreamPlatform.objects.filter(category_id__in=category_id_list, broker_id=broker_id).order_by('create_date')
         if not user:
             query = StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=broker_id).filter(Q(post_date__lt=current_date) | (Q(post_date=current_date) & Q(post_time__lte=current_time))).order_by('create_date')
         return query
@@ -190,7 +190,7 @@ class StreamPlatformRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     def put(self, request, pk):
         obj = self.get_object()
         serializer = self.get_serializer(instance=obj, data=request.data, partial=True)
-        is_checked = request.data['ischecked']
+        is_checked = request.data['is_notification']
         stream_platform_image = request.data.get('stream_platform_image')
         if serializer.is_valid():
             serializer.update()
