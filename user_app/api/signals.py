@@ -55,18 +55,19 @@ def create_user_profile(sender, instance, created, **kwargs):
                 profile = Profile.objects.filter(id=profile.id).first()
                 if profile and profile.is_super_admin and profile.account_type and profile.account_type.name == AccountTypeEnum.BUSINESS_ADMIN.value:
                     email_from = EMAIL_HOST_USER
-                    token = RefreshToken.for_user(creating_user)
                     full_name = str(profile.user.first_name) + ' ' + str(profile.user.last_name)
                     message_subject =  "Hinton Movie created new {account_type} for {title}".format(account_type=profile.account_type.name, title=full_name)
-                    msg_content = "<!DOCTYPE html><html><body><br><p>Hi {full_user_name}<p><h2>Thank you for your registration.</h2><h3>Your Account:</h3> Username: {user_name} </br> Password: {password} <br/>"
-                    msg_content = msg_content + "<p>Please click to the following to active user first:</p>"
-                    msg_content = msg_content + "{}?token={}".format(reverse('user_active'), str(token.access_token))
+                    msg_content = "<!DOCTYPE html><body><br><p>Hi {full_user_name}<p><h2>Thank you for your registration.</h2><h3>Your Account:</h3> Username: {user_name} </br> Password: {password} <br/>"
+                    msg_content = msg_content + "<p>Please click on the following to active user first:</p>"
+                    msg_content = msg_content + "<a href='"
+                    msg_content = msg_content + "https://hintondonkey.com{}?username={}&id={}".format(reverse('user_active'), str(creating_user.username), str(creating_user.id))
+                    msg_content = msg_content + "'\">" + "https://hintondonkey.com{}?username={}&id={}".format(reverse('user_active'), str(creating_user.username), str(creating_user.id)) + "</a>"
                     msg_content = msg_content + "</body></html>"
                     msg_content = msg_content.format(full_user_name=full_name, user_name=profile.user.username, password=instance.password2)
 
-                    email_to = profile.user.email
+                    email_to = [profile.user.email]
+                    
                     msg = EmailMessage(message_subject, msg_content, email_from, to=email_to)
-
 
                     msg.content_subtype = 'html'
                     msg.mixed_subtype = 'related'
@@ -100,7 +101,7 @@ def save_user_profile(sender, instance, **kwargs):
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
 
-    email_plaintext_message = "{}?token={}".format(reverse('password_reset:reset-password-request'), reset_password_token.key)
+    email_plaintext_message = "https://hintondonkey.com{}?token={}".format(reverse('password_reset:reset-password-request'), reset_password_token.key)
     email_from = EMAIL_HOST_USER
     send_mail(
         # title:

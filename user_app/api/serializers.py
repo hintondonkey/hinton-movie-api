@@ -149,6 +149,7 @@ class SubUserSerializer(serializers.ModelSerializer):
         account.account_type = account_type
         account.business_type = business_type
         account.current_user_id = current_user_id
+        account.password2 = password2
         account.save()
       
         return account

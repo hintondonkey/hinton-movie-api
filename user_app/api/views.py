@@ -209,25 +209,33 @@ class UserAvatarAPIView(RetrieveUpdateAPIView):
         return self.request.user.profile
 
 
-class UserActiveAPIView(UpdateAPIView):
-    queryset = Profile.objects.all()
-    serializer_class = serializers.ProfileIsActiveSerializer
+class UserActiveAPIView(APIView):
     permission_classes = (AllowAny,)
 
-    def get_object(self):
-        token = self.request.GET.get('token', None)
-        data = {'token': token}
+    def get(self, request):
+        username = request.GET.get('username', None)
+        id = request.GET.get('id', None)
         user = None
+        response = {
+                'status': 'fail',
+                'code': status.HTTP_200_OK,
+                'message': 'Active user failed!',
+        }
         try:
-            valid_data = TokenBackend(algorithm='HS256').decode(token, verify=False)
-            user = valid_data['user']
-            Profile.objects.filter(user=user).update(is_active=True)
+            if username and id:
+                user = User.objects.filter(id=int(id), username=username).first()
+                if user:
+                    Profile.objects.filter(user=user).update(is_active=True)
         except Exception as v:
             print("validation error", v)
             user = None
-        if not user:
-            return None
-        return user.profile
+        if user:
+            response = {
+                'status': 'success',
+                'code': status.HTTP_200_OK,
+                'message': 'Active user successfully',
+            }
+        return Response(response)
 
 
 class ChangePasswordView(UpdateAPIView):
