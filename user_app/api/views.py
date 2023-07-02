@@ -6,6 +6,7 @@ from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView, ListC
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
+from rest_framework_simplejwt.backends import TokenBackend
 from rest_framework import mixins
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
@@ -206,6 +207,27 @@ class UserAvatarAPIView(RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user.profile
+
+
+class UserActiveAPIView(UpdateAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = serializers.ProfileIsActiveSerializer
+    permission_classes = (AllowAny,)
+
+    def get_object(self):
+        token = self.request.GET.get('token', None)
+        data = {'token': token}
+        user = None
+        try:
+            valid_data = TokenBackend(algorithm='HS256').decode(token, verify=False)
+            user = valid_data['user']
+            Profile.objects.filter(user=user).update(is_active=True)
+        except Exception as v:
+            print("validation error", v)
+            user = None
+        if not user:
+            return None
+        return user.profile
 
 
 class ChangePasswordView(UpdateAPIView):

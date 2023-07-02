@@ -23,6 +23,7 @@ urlpatterns = [
     path("", views.UserAPIView.as_view(), name="user_info"),
     path("profile/", views.UserProfileAPIView.as_view(), name="user_profile"),
     path("profile/avatar/", views.UserAvatarAPIView.as_view(), name="user_avatar"),
+    path("profile/active/", views.UserActiveAPIView.as_view(), name="user_active"),
     path("account_type/", views.AccountTypeAPIView.as_view(), name="account_type"),
     path("business_type/", views.BusinessTypeAPIView.as_view(), name="business_type"),
     

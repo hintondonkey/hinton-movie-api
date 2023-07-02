@@ -62,6 +62,7 @@ class UserLoginSerializer(serializers.Serializer):
 
     def validate(self, data):
         user = authenticate(**data)
+        # if user and user.is_active and user.profile.is_active:
         if user and user.is_active:
             return user
         raise serializers.ValidationError("Incorrect Credentials")
@@ -88,6 +89,16 @@ class ProfileAvatarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ("avatar",)
+
+
+class ProfileIsActiveSerializer(serializers.ModelSerializer):
+    """
+    Serializer class to serialize the is active
+    """
+
+    class Meta:
+        model = Profile
+        fields = ("is_active",)
 
 
 class AccountTypeSerializer(serializers.ModelSerializer):
