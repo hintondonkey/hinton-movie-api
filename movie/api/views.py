@@ -13,6 +13,7 @@ from firebase_admin import credentials, messaging
 import os
 import json
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 from datetime import datetime
 
 from hintonmovie.permissions import *
@@ -24,7 +25,7 @@ firebase_admin.initialize_app(creds)
 
 def get_current_date_time():
     current_date_time = datetime.now()
-    return current_date_time.strftime("%d/%m/%Y"), current_date_time.strftime("%H:%M:%S")
+    return current_date_time.strftime("%Y-%m-%d"), current_date_time.strftime("%H:%M:%S")
 
 
 def send_notification(topic, data, title, content):
@@ -60,9 +61,13 @@ class StreamPlatformCategoryBrokerListAPIView(ListAPIView):
         query = None
         broker_id = self.kwargs.get('broker_id', None)
         category_id = self.kwargs.get('category_id', None)
+        current_date, current_time = get_current_date_time()
+        user = self.request.user
         if broker_id and category_id:
             category_id_list = BrokerService.objects.filter(broker_id=broker_id, category_id=category_id, is_active=True).values_list('category_id', flat=True)
             query = StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=broker_id).order_by('create_date')
+            if not user:
+                query = StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=broker_id).filter(Q(post_date__lt=current_date) | (Q(post_date=current_date) & Q(post_time__lte=current_time))).order_by('create_date')
         return query
     
 
@@ -78,12 +83,16 @@ class StreamPlatformCategoryBrokerSubCategoryListAPIView(ListAPIView):
         broker_id = self.kwargs.get('broker_id', None)
         category_id = self.kwargs.get('category_id', None)
         subcategory_id = self.kwargs.get('subcategory_id', None)
+        current_date, current_time = get_current_date_time()
+        user = self.request.user
         if broker_id and category_id:
             category_id_list = BrokerService.objects.filter(broker_id=broker_id, category_id=category_id, is_active=True).values_list('category_id', flat=True)
             if subcategory_id:
                 query = StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=broker_id, subcategory_id=subcategory_id).order_by('create_date')
             else:
                 query = StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=broker_id).order_by('create_date')
+            if not user and query:
+                query = query.filter(Q(post_date__lt=current_date) | (Q(post_date=current_date) & Q(post_time__lte=current_time))).order_by('create_date')
         return query
     
 
@@ -95,8 +104,14 @@ class StreamPlatformBrokerListAPIView(ListAPIView):
     serializer_class = StreamPlatformSerializer
 
     def get_queryset(self):
-        category_id_list = BrokerService.objects.filter(broker_id=self.kwargs['broker_id'], is_active=True).values_list('category_id', flat=True)
-        return StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=self.kwargs['broker_id']).order_by('create_date')
+        current_date, current_time = get_current_date_time()
+        user = self.request.user
+        broker_id = self.kwargs['broker_id']
+        category_id_list = BrokerService.objects.filter(broker_id=broker_id, is_active=True).values_list('category_id', flat=True)
+        query = StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=broker_id).order_by('create_date')
+        if not user:
+            query = StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=broker_id).filter(Q(post_date__lt=current_date) | (Q(post_date=current_date) & Q(post_time__lte=current_time))).order_by('create_date')
+        return query
     
 
 class StreamPlatformAPIView(RetrieveAPIView):
