@@ -3,6 +3,7 @@ from django.db.models.signals import post_save
 from django_rest_passwordreset.signals import reset_password_token_created
 from django.core.mail import send_mail, EmailMessage
 from django.urls import reverse
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from ..models import *
 from services.models import BrokerService
@@ -41,7 +42,7 @@ def create_user_profile(sender, instance, created, **kwargs):
                 current_user = User.objects.filter(id=int(instance.current_user_id)).first()
                 broker = Broker.objects.filter(id=current_user.profile.broker_id if current_user and current_user.profile else None).first()
         
-            profile = Profile.objects.create(user=creating_user, account_type=account_type, broker=broker)
+            profile = Profile.objects.create(user=creating_user, account_type=account_type, broker=broker, is_active=creating_user.is_superuser)
             if not profile.broker:
                 Profile.objects.filter(id=profile.id).update(broker=broker)
             is_super_admin = False
@@ -54,10 +55,14 @@ def create_user_profile(sender, instance, created, **kwargs):
                 profile = Profile.objects.filter(id=profile.id).first()
                 if profile and profile.is_super_admin and profile.account_type and profile.account_type.name == AccountTypeEnum.BUSINESS_ADMIN.value:
                     email_from = EMAIL_HOST_USER
+                    token = RefreshToken.for_user(creating_user)
                     full_name = str(profile.user.first_name) + ' ' + str(profile.user.last_name)
-                    message_subject =  "Hinton Movie created new Business Admin Account for {title}".format(title=full_name)
-                    msg_content = "<!DOCTYPE html><html><body><br><p>Hi {full_user_name}<p><h2>Thank you for your registration.</h2><h3>Your Account:</h3> Username: {user_name} </br> Password: {password} <br/></body></html>"
-                    msg_content = msg_content.format(full_user_name=full_name, user_name=profile.user.username, password=profile.user.password2)
+                    message_subject =  "Hinton Movie created new {account_type} for {title}".format(account_type=profile.account_type.name, title=full_name)
+                    msg_content = "<!DOCTYPE html><html><body><br><p>Hi {full_user_name}<p><h2>Thank you for your registration.</h2><h3>Your Account:</h3> Username: {user_name} </br> Password: {password} <br/>"
+                    msg_content = msg_content + "<p>Please click to the following to active user first:</p>"
+                    msg_content = msg_content + "{}?token={}".format(reverse('user_active'), str(token.access_token))
+                    msg_content = msg_content + "</body></html>"
+                    msg_content = msg_content.format(full_user_name=full_name, user_name=profile.user.username, password=instance.password2)
 
                     email_to = profile.user.email
                     msg = EmailMessage(message_subject, msg_content, email_from, to=email_to)
