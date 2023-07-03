@@ -44,8 +44,8 @@ class StreamPlatformSerializer(serializers.ModelSerializer):
         else:
             return value
         
-    def update(self):
-        return super(StreamPlatform, self).update(self.instance, self.validated_data)
+    def update(self, instance):
+        return super(StreamPlatformSerializer, self).update(instance, self.validated_data)
     
     def save(self, **data):
         broker_id = data.get('broker_id', None)
