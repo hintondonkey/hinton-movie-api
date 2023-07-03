@@ -231,7 +231,7 @@ class GetStreamPlatformDetailAV(APIView):
     
 
 class StreamPlatformAV(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsBusinessAdminSupervisorOrReadOnly]
     def get(self, request):
         platform = StreamPlatform.objects.all()
         serializer = StreamPlatformSerializer(
@@ -321,7 +321,7 @@ class StreamPlatPostformAV(APIView):
 
 
 class StreamPlatformDetailAV(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsBusinessAdminSupervisorOrReadOnly]
     def get(self, request, pk):
         try:
             platform = StreamPlatform.objects.get(pk=pk)
@@ -370,9 +370,10 @@ class StreamPlatformDetailAV(APIView):
         return Response(
             {"Success": "Delete " + platformtitle + " successfully!"}
         )
+    
 
 class WatchListAV(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsBusinessAdminSupervisorOrReadOnly]
     def get(self, request):
         watchList = WatchList.objects.all()
         serializer = WatchListSerializer(
@@ -388,16 +389,18 @@ class WatchListAV(APIView):
         else:
             return Response(serializer.errors)
         
+
 class GetWatchListByPlatformIdAV(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsBusinessAdminSupervisorOrReadOnly]
     def get(self, request, pk):
         watchList = WatchList.objects.filter(platform=pk)
         serializer = WatchListSerializer(
             watchList, many=True, context={'request': request})
         return Response(serializer.data)
 
+
 class WatchListDetailAV(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsBusinessAdminSupervisorOrReadOnly]
     def get(self, request, pk):
         try:
             watchList = WatchList.objects.get(pk=pk)
@@ -423,6 +426,7 @@ class WatchListDetailAV(APIView):
         return Response(
             {"Success": "Delete watch list successfully!"}
         )
+
 
 class UpdateNotificationAV(APIView):
     def put(self, request, pk):
