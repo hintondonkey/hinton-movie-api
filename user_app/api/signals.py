@@ -2,6 +2,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django_rest_passwordreset.signals import reset_password_token_created
 from django.core.mail import send_mail, EmailMessage
+
 from django.urls import reverse
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -25,6 +26,7 @@ def create_user_profile(sender, instance, created, **kwargs):
             broker = None
             account_type = None
             business_type = None
+            
             creating_user = User.objects.filter(id=instance.id).first()
             try:
                 account_type = AccountType.objects.filter(name=instance.account_type).first()
@@ -41,8 +43,9 @@ def create_user_profile(sender, instance, created, **kwargs):
             else:
                 current_user = User.objects.filter(id=int(instance.current_user_id)).first()
                 broker = Broker.objects.filter(id=current_user.profile.broker_id if current_user and current_user.profile else None).first()
-        
+            
             profile = Profile.objects.create(user=creating_user, account_type=account_type, broker=broker, is_active=creating_user.is_superuser)
+            
             if not profile.broker:
                 Profile.objects.filter(id=profile.id).update(broker=broker)
             is_super_admin = False
@@ -53,12 +56,12 @@ def create_user_profile(sender, instance, created, **kwargs):
             
             try:
                 profile = Profile.objects.filter(id=profile.id).first()
-                if profile and profile.is_super_admin and profile.account_type and profile.account_type.name == AccountTypeEnum.BUSINESS_ADMIN.value:
+                if profile and profile.account_type:
                     email_from = EMAIL_HOST_USER
                     full_name = str(profile.user.first_name) + ' ' + str(profile.user.last_name)
                     message_subject =  "Hinton Movie created new {account_type} for {title}".format(account_type=profile.account_type.name, title=full_name)
-                    msg_content = "<!DOCTYPE html><body><br><p>Hi {full_user_name}<p><h2>Thank you for your registration.</h2><h3>Your Account:</h3> Username: {user_name} </br> Password: {password} <br/>"
-                    msg_content = msg_content + "<p>Please click on the following to active user first:</p>"
+                    msg_content = "<!DOCTYPE html><body><br><p>Hi {full_user_name}<p><h2>Thank you for your registration.</h2><h3>Your Account:</h3> <p>Username: {user_name} </p></br> <p>Password: {password} </p><br/>"
+                    msg_content = msg_content + "<p>Please click on the following link to active your account first:</p>"
                     msg_content = msg_content + "<a href='"
                     msg_content = msg_content + "https://hintondonkey.com{}?username={}&id={}".format(reverse('user_active'), str(creating_user.username), str(creating_user.id))
                     msg_content = msg_content + "'\">" + "https://hintondonkey.com{}?username={}&id={}".format(reverse('user_active'), str(creating_user.username), str(creating_user.id)) + "</a>"
