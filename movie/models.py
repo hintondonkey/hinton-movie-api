@@ -55,7 +55,7 @@ class WatchList(models.Model):
 
 class MultipleImage(models.Model):
     uid = models.CharField(max_length=250)
-    name = models.CharField(max_length=250)
+    name = models.TextField()
     file_name = models.CharField(max_length=250, null=True, blank=True)
     file_size = models.CharField(max_length=250, null=True, blank=True)
     description = models.TextField(null=True, blank=True)

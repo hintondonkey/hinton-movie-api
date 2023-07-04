@@ -158,7 +158,7 @@ class StreamPlatformCreateAPIView(CreateAPIView):
                     if watchlist_serializer.is_valid():
                         watchlist_serializer.save()
                     else:
-                        return Response(watchlist_serializer.errors)
+                        return Response(watchlist_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
             if stream_platform_id and stream_platform_image:
                 for image in list(stream_platform_image):
@@ -167,7 +167,7 @@ class StreamPlatformCreateAPIView(CreateAPIView):
                     if multiple_image_serializer.is_valid():
                         multiple_image_serializer.save()
                     else:
-                        return Response(multiple_image_serializer.errors)
+                        return Response(multiple_image_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
             send_notification("demo", stream_platform_id, serializer.data['titleNoti'], serializer.data['summaryNoti'])
         stream_flatform = StreamPlatform.objects.filter(id=stream_platform_id).first()
