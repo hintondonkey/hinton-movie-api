@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, APIView
 from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework import status
-from movie.api.serializers import WatchListSerializer, StreamPlatformSerializer, MultipleImageSerializer
+from movie.api.serializers import WatchListSerializer, StreamPlatformSerializer, MultipleImageSerializer, StreamPlatformActiveSerializer
 from movie.models import WatchList, StreamPlatform, MultipleImage
 from services.models import BrokerService
 from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS, IsAuthenticatedOrReadOnly, IsAdminUser
@@ -468,5 +468,17 @@ class NumberOfConnectionMovieUpdateAPIView(RetrieveUpdateAPIView):
     permission_classes = (AllowAny, )
     serializer_class = StreamPlatformSerializer
 
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+    
+
+class StreamPlatformActiveUpdateAPIView(UpdateAPIView):
+    permission_classes = [IsBusinessAdminSupervisorOrReadOnly]
+    serializer_class = StreamPlatformActiveSerializer
+
+    def get_object(self):
+        pk = self.kwargs["pk"]
+        return get_object_or_404(StreamPlatform, id=pk)
+    
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)

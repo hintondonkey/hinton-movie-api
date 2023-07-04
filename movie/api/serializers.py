@@ -21,6 +21,15 @@ class MultipleImageSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class StreamPlatformActiveSerializer(serializers.ModelSerializer):
+    """
+    Serializer class to serialize User model.
+    """
+    class Meta:
+        model = StreamPlatform
+        fields = ("id", "active")
+
+        
 class StreamPlatformSerializer(serializers.ModelSerializer):
     watchlist = WatchListSerializer(many=True, read_only=True)
     stream_platform_image = MultipleImageSerializer(many=True, read_only=True)

@@ -11,6 +11,7 @@ urlpatterns = [
     path('<int:broker_id>/<int:pk>/', StreamPlatformAPIView.as_view(), name='get_stream_platform_broker_detail'),
     path('stream_platform/<int:pk>/', StreamPlatformRetrieveUpdateDestroyAPIView.as_view(), name='get_update_delete_stream_platform'),
     path('stream_platform/', StreamPlatformCreateAPIView.as_view(), name='create_stream_platform'),
+    path('stream_platform_update_active/<int:pk>/', StreamPlatformActiveUpdateAPIView.as_view(), name='stream_platform_update_active'),
     path('noti/<int:pk>', UpdateNotificationAV.as_view(), name='update-notification'),
     path('get-noti/', GetNotification.as_view(), name='get-notification'),
     path('stream/', StreamPlatformAV.as_view(), name='Streamplatform-list'),
