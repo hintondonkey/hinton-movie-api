@@ -10,7 +10,7 @@ from ..models import *
 from services.models import BrokerService
 from lookup.models import Category
 from hintonmovie.globals import *
-from hintonmovie.settings import EMAIL_HOST_USER
+from hintonmovie.settings import EMAIL_HOST_USER, ENABLE_SENDING_VERIFICATION_EMAIL
 
 
 @receiver(post_save, sender=User) 
@@ -56,11 +56,11 @@ def create_user_profile(sender, instance, created, **kwargs):
             
             try:
                 profile = Profile.objects.filter(id=profile.id).first()
-                if profile and profile.account_type:
+                if profile and profile.account_type and ENABLE_SENDING_VERIFICATION_EMAIL:
                     email_from = EMAIL_HOST_USER
                     full_name = str(profile.user.first_name) + ' ' + str(profile.user.last_name)
                     message_subject =  "Hinton Movie created new {account_type} for {title}".format(account_type=profile.account_type.name, title=full_name)
-                    msg_content = "<!DOCTYPE html><body><br><p>Hi {full_user_name}<p><h2>Thank you for your registration.</h2><h3>Your Account:</h3> <p>Username: {user_name} </p></br> <p>Password: {password} </p><br/>"
+                    msg_content = "<!DOCTYPE html><body><br><p>Hi {full_user_name},<p><h2>Thank you for your registration.</h2><h3>Your Account:</h3> <p>Username: {user_name} </p></br> <p>Password: {password} </p><br/>"
                     msg_content = msg_content + "<p>Please click on the following link to active your account first:</p>"
                     msg_content = msg_content + "<a href='"
                     msg_content = msg_content + "https://hintondonkey.com{}?username={}&id={}".format(reverse('user_active'), str(creating_user.username), str(creating_user.id))
@@ -106,13 +106,14 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
     email_plaintext_message = "https://hintondonkey.com{}?token={}".format(reverse('password_reset:reset-password-request'), reset_password_token.key)
     email_from = EMAIL_HOST_USER
-    send_mail(
-        # title:
-        "Password Reset for {title}".format(title="Hinton Movie"),
-        # message:
-        email_plaintext_message,
-        # from:
-        email_from,
-        # to:
-        [reset_password_token.user.email]
-    )
+    if ENABLE_SENDING_VERIFICATION_EMAIL:
+        send_mail(
+            # title:
+            "Password Reset for {title}".format(title="Hinton Movie"),
+            # message:
+            email_plaintext_message,
+            # from:
+            email_from,
+            # to:
+            [reset_password_token.user.email]
+        )
