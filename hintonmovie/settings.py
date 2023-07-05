@@ -187,6 +187,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:21690",
     "https://stephenkiendinh.com",
     "http://localhost:3000",
+    "http://localhost:3001",
     "https://hintondonkey.com",
     "https://stage.stephenkiendinh.com"
 ]
