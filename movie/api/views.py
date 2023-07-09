@@ -17,15 +17,10 @@ from django.db.models import Q
 from datetime import datetime
 
 from hintonmovie.permissions import *
+from hintonmovie.globals import *
 
 creds = credentials.Certificate("movie/api/cert.json")
 firebase_admin.initialize_app(creds)
-
-
-
-def get_current_date_time():
-    current_date_time = datetime.now()
-    return current_date_time.strftime("%Y-%m-%d"), current_date_time.strftime("%H:%M:%S")
 
 
 def send_notification(topic, data, title, content):
