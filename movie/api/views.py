@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view, APIView
 from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework import status
 from movie.api.serializers import WatchListSerializer, StreamPlatformSerializer, MultipleImageSerializer, StreamPlatformActiveSerializer
+from notification.api.serializers import NotificationSerializer
 from movie.models import WatchList, StreamPlatform, MultipleImage
 from services.models import BrokerService
 from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS, IsAuthenticatedOrReadOnly, IsAdminUser
@@ -141,6 +142,7 @@ class StreamPlatformCreateAPIView(CreateAPIView):
 
         watchlist = request.data.get('watchlist')
         stream_platform_image = request.data.get('stream_platform_image')
+        notification_list = request.data.get('notification_list')
         stream_platform_id = None
         if serializer.is_valid(raise_exception=True):
             stream_platform = serializer.save(broker_id=broker_id, created_user_id=created_user_id)
@@ -163,6 +165,15 @@ class StreamPlatformCreateAPIView(CreateAPIView):
                         multiple_image_serializer.save()
                     else:
                         return Response(multiple_image_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+            if stream_platform_id and notification_list:
+                for notification in list(notification_list):
+                    notification['stream_platform'] = stream_platform_id
+                    notification_serializer = NotificationSerializer(data=notification)
+                    if notification_serializer.is_valid():
+                        notification_serializer.save()
+                    else:
+                        return Response(notification_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
             send_notification("demo", stream_platform_id, serializer.data['titleNoti'], serializer.data['summaryNoti'])
         stream_flatform = StreamPlatform.objects.filter(id=stream_platform_id).first()
