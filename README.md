@@ -10,3 +10,9 @@
 "time_show_date":"03:31:00",
 "title":"phim ma",
 "titleNoti":""
+
+# Start docker
+1. Run: docker-compose build
+2. Run: docker-compose up
+3. Go to other terminal and then run: docker exec -t -i container_id bash
+4. Make migrate by run: python manage.py migrate
