@@ -20,22 +20,22 @@ from datetime import datetime
 from hintonmovie.permissions import *
 from hintonmovie.globals import *
 
-creds = credentials.Certificate("movie/api/cert.json")
-firebase_admin.initialize_app(creds)
+# creds = credentials.Certificate("movie/api/cert.json")
+# firebase_admin.initialize_app(creds)
 
 
-def send_notification(topic, data, title, content):
-    try:
-        if title and content:
-            message = messaging.Message(
-                notification= messaging.Notification(title=title, 
-                                                        body=content),
-                topic="demo",
-                data=data
-            )
-            messaging.send(message)
-    except Exception as e:
-        print("Error while send notification as message: ", e)
+# def send_notification(topic, data, title, content):
+#     try:
+#         if title and content:
+#             message = messaging.Message(
+#                 notification= messaging.Notification(title=title, 
+#                                                         body=content),
+#                 topic="demo",
+#                 data=data
+#             )
+#             messaging.send(message)
+#     except Exception as e:
+#         print("Error while send notification as message: ", e)
 
 
 class GetAllStreamPlatformAV(APIView):
@@ -175,7 +175,7 @@ class StreamPlatformCreateAPIView(CreateAPIView):
                     else:
                         return Response(notification_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
-            send_notification("demo", stream_platform_id, serializer.data['titleNoti'], serializer.data['summaryNoti'])
+            # send_notification("demo", stream_platform_id, serializer.data['titleNoti'], serializer.data['summaryNoti'])
         stream_flatform = StreamPlatform.objects.filter(id=stream_platform_id).first()
         return Response(StreamPlatformSerializer(stream_flatform).data, status=status.HTTP_201_CREATED)
     
@@ -206,7 +206,7 @@ class StreamPlatformRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
                 stream_platform_id = {
                     "id": str(current_id)
                 }
-                send_notification("demo", stream_platform_id, serializer.data['titleNoti'], serializer.data['summaryNoti'])
+                # send_notification("demo", stream_platform_id, serializer.data['titleNoti'], serializer.data['summaryNoti'])
 
             stream_platform_id = current_id
             MultipleImage.objects.filter(stream_platform_id=int(stream_platform_id)).delete()

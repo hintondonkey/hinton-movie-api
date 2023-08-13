@@ -183,6 +183,8 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1",
+    "http://localhost",
     "http://127.0.0.1:5500",
     "http://localhost:21690",
     "https://stephenkiendinh.com",
@@ -254,3 +256,24 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')  #sender's email-id
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')  #password associated with above email-id
 ENABLE_SENDING_VERIFICATION_EMAIL = config('ENABLE_SENDING_VERIFICATION_EMAIL')
+
+# celery
+CELERY_BROKER_URL = config('CELERY_BROKER_URL') # Debug
+
+# CELERY_BROKER_URL = os.environ.get('REDIS_URL')
+CELERY_ACCEPT_CONTENT = ['json', 'pickle']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TASK_TRACK_STARTED = True
+CELERY_WORKER_CANCEL_LONG_RUNNING_TASKS_ON_CONNECTION_LOSS = True
+BROKER_HEARTBEAT = 0
+
+CELERY_BEAT_SCHEDULE = {
+    'add-every-5-minutes': {
+        'task': 'notification.api.tasks.send_notification_task',
+        'schedule': 300.0,
+        'args': (),
+        'options': {
+            'expires': 50.0,
+        },
+    },
+}

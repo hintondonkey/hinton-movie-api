@@ -15,30 +15,75 @@ services:
       DATABASE_HOST: dokku-postgres-hintonmovie
     restart: always
 
-  
-  # web:
-    # image: main
-    # container_name: main
-    # environment:
-    #   - DATABASE_URL=postgres://db/phongthuy_thanhnhan
-    #   - SITE_URL=http://localhost:8000
-    #   # - REDIS_URL=redis://redis:6379/1
-    #   # - ELASTICSEARCH_URL=http://elasticsearch:9200
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
-    # command: "python /code/manage.py runserver 0.0.0.0:8000"
-    # volumes:
-    #   - .:/code
-    #   # - .:/code/static
-    # working_dir: /code
-    # environment:
-    #   DEBUG: 'true'
-    # ports:
-    #   - "8000:8000"
-    # restart: always
-    # depends_on:
-    #   - db
+  redis:
+    image: redis:7-alpine
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: django_celery_worker
+    command: celery -A hintonmovie worker --loglevel=info
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
+      - db
+
+  celery_beat:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: django_celery_beat
+    command: celery -A hintonmovie beat --loglevel=info
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
+      - db
+
+  flower:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: django_celery_flower
+    command: celery -A hintonmovie flower --loglevel=info
+    volumes:
+      - .:/code
+    ports:
+      - 5557:5555
+    depends_on:
+      - redis
+      - db
+      
+  rabbitmq3:
+    container_name: "rabbitmq"
+    image: rabbitmq:3-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  web:
+    image: hintonmovie
+    container_name: hintonmovie
+    environment:
+      - DATABASE_URL=postgres://db/hintonmovie
+      - SITE_URL=http://localhost:8000
+      # - REDIS_URL=redis://redis:6379/1
+      # - ELASTICSEARCH_URL=http://elasticsearch:9200
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: "python /code/manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/code
+      # - .:/code/static
+    working_dir: /code
+    ports:
+      - "8081:8000"
+    restart: always
+    depends_on:
+      - db
 
 volumes:
   pgdata:

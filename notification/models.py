@@ -11,6 +11,8 @@ class Notification(BaseCreateModel):
     title = models.CharField(max_length=250, null=True, blank=True)
     content = models.TextField(null=True, blank=True)
     status = models.BooleanField(default=False)
+    post_date = models.DateField(null=True, blank=False)
+    post_time = models.TimeField(null=True, blank=True)
     created_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='user_create_notification')
     stream_platform = models.ForeignKey(StreamPlatform, on_delete=models.CASCADE, null=True, related_name='stream_platform_notification')
 
