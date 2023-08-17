@@ -39,7 +39,7 @@ urlpatterns = [
     path('services/', include('services.api.urls')),
     path('account/', include('user_app.api.urls')),
     path('lookup/', include('lookup.api.urls')),
-    # path('news/', include('news.api.urls')),
+    path('news/', include('news.api.urls')),
     path('notification/', include('notification.api.urls')),
     path('api-auth/', include('rest_framework.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

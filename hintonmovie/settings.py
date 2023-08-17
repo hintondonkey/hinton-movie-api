@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'lookup',
     'services',
     'notification',
+    'news'
 ]
 
 MIDDLEWARE = [
