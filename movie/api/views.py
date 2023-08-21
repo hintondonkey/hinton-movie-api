@@ -63,7 +63,7 @@ class StreamPlatformCategoryBrokerListAPIView(ListAPIView):
             category_id_list = BrokerService.objects.filter(broker_id=broker_id, category_id=category_id, is_active=True).values_list('category_id', flat=True)
             query = StreamPlatform.objects.filter(category_id__in=category_id_list, broker_id=broker_id).order_by('-active', '-create_date')
             if not user:
-                query = StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=broker_id).filter(Q(post_date__lt=current_date) | (Q(post_date=current_date) & Q(post_time__lte=current_time))).order_by('-create_date')
+                query = StreamPlatform.objects.filter(active=True, approval=True, status=True, category_id__in=category_id_list, broker_id=broker_id).filter(Q(post_date__lt=current_date) | (Q(post_date=current_date) & Q(post_time__lte=current_time))).order_by('-create_date')
         return query
     
 
@@ -88,7 +88,7 @@ class StreamPlatformCategoryBrokerSubCategoryListAPIView(ListAPIView):
             else:
                 query = StreamPlatform.objects.filter(category_id__in=category_id_list, broker_id=broker_id).order_by('-active', '-create_date')
             if not user and query:
-                query = query.filter(Q(active=True) & Q(post_date__lt=current_date) | (Q(post_date=current_date) & Q(post_time__lte=current_time))).order_by('-create_date')
+                query = query.filter(Q(active=True) & Q(approval=True) & Q(status=True) & Q(post_date__lt=current_date) | (Q(post_date=current_date) & Q(post_time__lte=current_time))).order_by('-create_date')
         return query
     
 
@@ -106,7 +106,7 @@ class StreamPlatformBrokerListAPIView(ListAPIView):
         category_id_list = BrokerService.objects.filter(broker_id=broker_id, is_active=True).values_list('category_id', flat=True)
         query = StreamPlatform.objects.filter(category_id__in=category_id_list, broker_id=broker_id).order_by('-active', '-create_date')
         if not user:
-            query = StreamPlatform.objects.filter(active=True, category_id__in=category_id_list, broker_id=broker_id).filter(Q(post_date__lt=current_date) | (Q(post_date=current_date) & Q(post_time__lte=current_time))).order_by('-create_date')
+            query = StreamPlatform.objects.filter(active=True, approval=True, status=True, category_id__in=category_id_list, broker_id=broker_id).filter(Q(post_date__lt=current_date) | (Q(post_date=current_date) & Q(post_time__lte=current_time))).order_by('-create_date')
         return query
     
 
